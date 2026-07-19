@@ -1,0 +1,9 @@
+initial first steps{
+  get a raw image as input
+  get its Height and Width
+  and read all of its RGB pixel values in a char buffer
+}
+
+
+
+do need this application to be a CLI
