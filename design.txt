@@ -4,6 +4,20 @@ initial first steps{
   and read all of its RGB pixel values in a char buffer
 }
 
+next couple of step{
+  do chroma subsampling of the image (convert it to Y:Cr:Cb either 4:2:2 or 4:2:0)
+}
 
 
 do need this application to be a CLI
+
+
+-----------------------------------------------------------------------------------------------------------------------------
+
+broken down steps
+  initial read and conversion to YCRCB -> class name chroma
+
+  DCT and quantization class name -> dct 
+
+  entropy coding -> class name to be decided
+
