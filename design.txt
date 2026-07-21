@@ -19,5 +19,5 @@ broken down steps
 
   DCT and quantization class name -> dct 
 
-  entropy coding -> class name to be decided
+  entropy coding -> class name to be decided could be entropy idk ?
 
