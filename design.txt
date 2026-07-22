@@ -17,7 +17,7 @@ do need this application to be a CLI
 broken down steps
   initial read and conversion to YCRCB -> class name chroma
 
-  DCT and quantization class name -> dct 
+  DCT ,quantization and zigzag class name -> dct 
 
   entropy coding -> class name to be decided could be entropy idk ?
 
@@ -27,4 +27,6 @@ broken down steps
   goal is to get height , width , and path to raw image then return a yuv420p buffer on which DCT can be applied cleanly this buffer will be passed to another DCT class
 
 
+---DCT class
 
+take the sumSample buffer as input split into 8x8 blocks and perform DCT and quantization

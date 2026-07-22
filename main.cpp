@@ -22,6 +22,10 @@ int main() {
   ofstream outputFile{"subSample.raw"};
   outputFile.write(reinterpret_cast<char *>(imageSubSample.data()),
                    imageSubSample.size());
+  unsigned int heightAdj = (16 - height % 16) % 16;
+  unsigned int widthAdj = (16 - width % 16) % 16;
+  height += heightAdj;
+  width += widthAdj;
   dct dctObj;
-  dctObj.performDCT(imageSubSample);
+  dctObj.performDCT(imageSubSample, width, height);
 }
