@@ -15,5 +15,6 @@ int main() {
   cout << "enter filePath" << endl;
   cin >> filePath;
   chroma chromaObj;
-  chromaObj.generateSubsample(height, width, filePath);
+  vector<unsigned char> imageSubSample =
+      chromaObj.generateSubsample(height, width, filePath);
 }

@@ -113,8 +113,5 @@ vector<unsigned char> chroma::generateSubsample(unsigned int height,
   this->width += widthAdj;
   vector<unsigned char> yuv420pbuffer =
       rgbToyuv(rgbBuffer, this->height, this->width);
-  ofstream outputFile{"subsamplePaul.raw"};
-  outputFile.write(reinterpret_cast<char *>(yuv420pbuffer.data()),
-                   yuv420pbuffer.size());
   return yuv420pbuffer;
 }
