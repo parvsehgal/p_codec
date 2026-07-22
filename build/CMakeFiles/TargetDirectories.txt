@@ -1,0 +1,3 @@
+/Users/parvsehgal/Desktop/development/p_codec/build/CMakeFiles/p_codec.dir
+/Users/parvsehgal/Desktop/development/p_codec/build/CMakeFiles/edit_cache.dir
+/Users/parvsehgal/Desktop/development/p_codec/build/CMakeFiles/rebuild_cache.dir

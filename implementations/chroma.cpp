@@ -12,7 +12,7 @@ vector<unsigned char> chroma ::readFile(unsigned int height, unsigned int width,
   ifstream inputFile{filePath};
   vector<unsigned char> rgbBuffer(fileSize);
   inputFile.read(reinterpret_cast<char *>(rgbBuffer.data()), fileSize);
-  cout << "raw paul size ->" << inputFile.tellg() << endl;
+  cout << "raw image size ->" << inputFile.tellg() << endl;
 
   // now make padded rgbMatrix;
   unsigned int heightAdj = (16 - height % 16) % 16;
@@ -72,6 +72,7 @@ vector<unsigned char> chroma::rgbToyuv(vector<unsigned char> &rgbBuffer,
     cbBuffer.push_back(currCb);
     crBuffer.push_back(currCr);
   }
+
   // subsample here take avg of every 4 samples (no index out of bounds due to
   // padding);
   vector<unsigned char> reducedCb;
@@ -93,6 +94,8 @@ vector<unsigned char> chroma::rgbToyuv(vector<unsigned char> &rgbBuffer,
       reducedCr.push_back(avgCr);
     }
   }
+
+  // make the final 420p buffer and return it
   vector<unsigned char> yuv420pbuffer;
   yuv420pbuffer.reserve(yBuffer.size() + reducedCb.size() + reducedCr.size());
   yuv420pbuffer.insert(yuv420pbuffer.end(), yBuffer.begin(), yBuffer.end());
@@ -106,12 +109,15 @@ vector<unsigned char> chroma::generateSubsample(unsigned int height,
                                                 string filePath) {
   this->height = height;
   this->width = width;
-  vector<unsigned char> rgbBuffer = readFile(height, width, filePath);
+  vector<unsigned char> rgbBuffer =
+      readFile(this->height, this->width, filePath);
   unsigned int heightAdj = (16 - height % 16) % 16;
   unsigned int widthAdj = (16 - width % 16) % 16;
   this->height += heightAdj;
   this->width += widthAdj;
   vector<unsigned char> yuv420pbuffer =
       rgbToyuv(rgbBuffer, this->height, this->width);
+  cout << "subsample size-> " << yuv420pbuffer.size() << endl;
+  cout << "new Dimensions " << this->width << " " << this->height << endl;
   return yuv420pbuffer;
 }
