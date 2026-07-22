@@ -21,3 +21,10 @@ broken down steps
 
   entropy coding -> class name to be decided could be entropy idk ?
 
+
+---CHROMA class
+
+  goal is to get height , width , and path to raw image then return a yuv420p buffer on which DCT can be applied cleanly this buffer will be passed to another DCT class
+
+
+
