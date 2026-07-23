@@ -101,6 +101,9 @@ vector<unsigned char> chroma::rgbToyuv(vector<unsigned char> &rgbBuffer,
   yuv420pbuffer.insert(yuv420pbuffer.end(), yBuffer.begin(), yBuffer.end());
   yuv420pbuffer.insert(yuv420pbuffer.end(), reducedCb.begin(), reducedCb.end());
   yuv420pbuffer.insert(yuv420pbuffer.end(), reducedCr.begin(), reducedCr.end());
+  cout << "ybuffer size-> " << yBuffer.size() << endl;
+  cout << "cbBuffer size-> " << reducedCb.size() << endl;
+  cout << "crBuffer size-> " << reducedCr.size() << endl;
   return yuv420pbuffer;
 }
 
