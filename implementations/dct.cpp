@@ -1,4 +1,5 @@
 #include "../headers/dct.hpp"
+#include <cmath>
 #include <cstddef>
 #include <iostream>
 #include <vector>
@@ -7,19 +8,19 @@
 using namespace std;
 
 void dct::dctOn8x8(unsigned int i, unsigned int j,
-                   vector<vector<int>> &matrix) {
+                   vector<vector<float>> &matrix) {
   float Cu, Cv;
   vector<vector<int>> input(8, vector<int>(8));
   for (int a = 0; a < 8; a++) {
     for (int b = 0; b < 8; b++) {
-      input[a][b] = matrix[i + a][j + b];
+      input[a][b] = static_cast<int>(matrix[i + a][j + b]);
     }
   }
   // now should be able to perform DCT and put the values directly in the source
   // matrix
   for (int u = 0; u < 8; u++) {
     for (int v = 0; v < 8; v++) {
-      int sum = 0;
+      double sum = 0.0;
       for (int x = 0; x < 8; x++) {
         for (int y = 0; y < 8; y++) {
           sum = sum + input[x][y] * cos(((2.0 * x + 1) * u * PI) / 16.0) *
@@ -77,18 +78,18 @@ void dct::performDCT(vector<unsigned char> &imageSubSample, unsigned int width,
   // now I have 3 sperate buffer which should be correctly split
   // performDCT on 8x8 samples of these buffers after making them into matrices
 
-  vector<vector<int>> yMatrix(height, vector<int>(width));
+  vector<vector<float>> yMatrix(height, vector<float>(width));
   for (int i = 0; i < height; i++) {
     for (int j = 0; j < width; j++) {
-      yMatrix[i][j] = static_cast<int>(yBuffer[i * width + j]);
+      yMatrix[i][j] = static_cast<float>(yBuffer[i * width + j]);
     }
   }
-  vector<vector<int>> cbMatrix(height / 2, vector<int>(width / 2));
-  vector<vector<int>> crMatrix(height / 2, vector<int>(width / 2));
+  vector<vector<float>> cbMatrix(height / 2, vector<float>(width / 2));
+  vector<vector<float>> crMatrix(height / 2, vector<float>(width / 2));
   for (int i = 0; i < (height / 2); i++) {
     for (int j = 0; j < (width / 2); j++) {
-      cbMatrix[i][j] = static_cast<int>(cbBuffer[i * (width / 2) + j]);
-      crMatrix[i][j] = static_cast<int>(crBuffer[i * (width / 2) + j]);
+      cbMatrix[i][j] = static_cast<float>(cbBuffer[i * (width / 2) + j]);
+      crMatrix[i][j] = static_cast<float>(crBuffer[i * (width / 2) + j]);
     }
   }
 
