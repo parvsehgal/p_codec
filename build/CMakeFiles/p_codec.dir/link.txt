@@ -1,1 +1,0 @@
-/usr/bin/c++  -arch arm64 -Wl,-search_paths_first -Wl,-headerpad_max_install_names CMakeFiles/p_codec.dir/main.cpp.o CMakeFiles/p_codec.dir/implementations/chroma.cpp.o CMakeFiles/p_codec.dir/implementations/dct.cpp.o -o p_codec
