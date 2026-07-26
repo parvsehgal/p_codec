@@ -1,5 +1,6 @@
 #include "headers/chroma.hpp"
 #include "headers/dct.hpp"
+#include "headers/entropy.hpp"
 #include <cstddef>
 #include <fstream>
 #include <iostream>
@@ -16,6 +17,8 @@ int main() {
   cin >> height;
   cout << "enter filePath" << endl;
   cin >> filePath;
+
+  // STAGE 1
   chroma chromaObj;
   vector<unsigned char> imageSubSample =
       chromaObj.generateSubsample(height, width, filePath);
@@ -26,6 +29,12 @@ int main() {
   unsigned int widthAdj = (16 - width % 16) % 16;
   height += heightAdj;
   width += widthAdj;
+
+  // STAGE 2
   dct dctObj;
   dctObj.performDCT(imageSubSample, width, height);
+
+  // STAGE 3
+  entropy entropyObj;
+  entropyObj.zigzagRunlevel();
 }

@@ -8,6 +8,7 @@ set(SOURCES
     main.cpp
     implementations/chroma.cpp
     implementations/dct.cpp
+    implementations/entropy.cpp
 )
 
 # Create executable
