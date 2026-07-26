@@ -1,6 +1,6 @@
 CMakeFiles/p_codec.dir/main.cpp.o: \
-  /Users/parvsehgal/Desktop/development/p_codec/main.cpp \
-  /Users/parvsehgal/Desktop/development/p_codec/headers/chroma.hpp \
+  /Users/parvsehgal/Desktop/development/2projs/p_codec/main.cpp \
+  /Users/parvsehgal/Desktop/development/2projs/p_codec/headers/chroma.hpp \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/string \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__algorithm/max.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__algorithm/comp.h \
@@ -752,7 +752,7 @@ CMakeFiles/p_codec.dir/main.cpp.o: \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/_types/_fsfilcnt_t.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/_types/_nl_item.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/cstdarg \
-  /Users/parvsehgal/Desktop/development/p_codec/headers/dct.hpp \
+  /Users/parvsehgal/Desktop/development/2projs/p_codec/headers/dct.hpp \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/fstream \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__filesystem/path.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/iomanip \

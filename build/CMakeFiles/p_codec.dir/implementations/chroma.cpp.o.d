@@ -1,6 +1,6 @@
 CMakeFiles/p_codec.dir/implementations/chroma.cpp.o: \
-  /Users/parvsehgal/Desktop/development/p_codec/implementations/chroma.cpp \
-  /Users/parvsehgal/Desktop/development/p_codec/implementations/../headers/chroma.hpp \
+  /Users/parvsehgal/Desktop/development/2projs/p_codec/implementations/chroma.cpp \
+  /Users/parvsehgal/Desktop/development/2projs/p_codec/implementations/../headers/chroma.hpp \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/string \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__algorithm/max.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__algorithm/comp.h \

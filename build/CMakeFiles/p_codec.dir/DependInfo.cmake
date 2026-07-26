@@ -8,9 +8,9 @@ set(CMAKE_DEPENDS_LANGUAGES
 
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
-  "/Users/parvsehgal/Desktop/development/p_codec/implementations/chroma.cpp" "CMakeFiles/p_codec.dir/implementations/chroma.cpp.o" "gcc" "CMakeFiles/p_codec.dir/implementations/chroma.cpp.o.d"
-  "/Users/parvsehgal/Desktop/development/p_codec/implementations/dct.cpp" "CMakeFiles/p_codec.dir/implementations/dct.cpp.o" "gcc" "CMakeFiles/p_codec.dir/implementations/dct.cpp.o.d"
-  "/Users/parvsehgal/Desktop/development/p_codec/main.cpp" "CMakeFiles/p_codec.dir/main.cpp.o" "gcc" "CMakeFiles/p_codec.dir/main.cpp.o.d"
+  "/Users/parvsehgal/Desktop/development/2projs/p_codec/implementations/chroma.cpp" "CMakeFiles/p_codec.dir/implementations/chroma.cpp.o" "gcc" "CMakeFiles/p_codec.dir/implementations/chroma.cpp.o.d"
+  "/Users/parvsehgal/Desktop/development/2projs/p_codec/implementations/dct.cpp" "CMakeFiles/p_codec.dir/implementations/dct.cpp.o" "gcc" "CMakeFiles/p_codec.dir/implementations/dct.cpp.o.d"
+  "/Users/parvsehgal/Desktop/development/2projs/p_codec/main.cpp" "CMakeFiles/p_codec.dir/main.cpp.o" "gcc" "CMakeFiles/p_codec.dir/main.cpp.o.d"
   )
 
 # Targets to which this target links which contain Fortran sources.

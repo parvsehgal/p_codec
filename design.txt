@@ -30,3 +30,8 @@ broken down steps
 ---DCT class
 
 take the sumSample buffer as input split into 8x8 blocks and perform DCT and quantization
+
+
+--Entropy class
+
+take in quantized coefficients arrage in zig-zag pattern and apply run level coding /huffman coding ?

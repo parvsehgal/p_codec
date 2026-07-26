@@ -8,7 +8,7 @@
 using namespace std;
 
 void dct::dctOn8x8(unsigned int i, unsigned int j,
-                   vector<vector<float>> &matrix) {
+                   vector<vector<float>> &matrix, string component) {
   float Cu, Cv;
   vector<vector<int>> input(8, vector<int>(8));
   for (int a = 0; a < 8; a++) {
@@ -35,7 +35,13 @@ void dct::dctOn8x8(unsigned int i, unsigned int j,
         Cv = 1 / sqrt(2);
       else
         Cv = 1;
-      matrix[u + i][v + j] = 1 / 4.0 * Cu * Cv * sum;
+      if (component == "lume") {
+        matrix[u + i][v + j] =
+            round(1 / 4.0 * Cu * Cv * sum / this->luminanceTable[u][v]);
+      } else {
+        matrix[u + i][v + j] =
+            round(1 / 4.0 * Cu * Cv * sum / this->chrominanceTabe[u][v]);
+      }
     }
   }
   if (i == 0 && j == 0) {
@@ -81,15 +87,15 @@ void dct::performDCT(vector<unsigned char> &imageSubSample, unsigned int width,
   vector<vector<float>> yMatrix(height, vector<float>(width));
   for (int i = 0; i < height; i++) {
     for (int j = 0; j < width; j++) {
-      yMatrix[i][j] = static_cast<float>(yBuffer[i * width + j]);
+      yMatrix[i][j] = static_cast<float>(yBuffer[i * width + j] - 128);
     }
   }
   vector<vector<float>> cbMatrix(height / 2, vector<float>(width / 2));
   vector<vector<float>> crMatrix(height / 2, vector<float>(width / 2));
   for (int i = 0; i < (height / 2); i++) {
     for (int j = 0; j < (width / 2); j++) {
-      cbMatrix[i][j] = static_cast<float>(cbBuffer[i * (width / 2) + j]);
-      crMatrix[i][j] = static_cast<float>(crBuffer[i * (width / 2) + j]);
+      cbMatrix[i][j] = static_cast<float>(cbBuffer[i * (width / 2) + j] - 128);
+      crMatrix[i][j] = static_cast<float>(crBuffer[i * (width / 2) + j] - 128);
     }
   }
 
@@ -103,13 +109,13 @@ void dct::performDCT(vector<unsigned char> &imageSubSample, unsigned int width,
 
   for (int i = 0; i < yMatrix.size(); i += 8) {
     for (int j = 0; j < yMatrix[0].size(); j += 8) {
-      dctOn8x8(i, j, yMatrix);
+      dctOn8x8(i, j, yMatrix, "lume");
     }
   }
   for (int i = 0; i < cbMatrix.size(); i += 8) {
     for (int j = 0; j < cbMatrix[0].size(); j += 8) {
-      dctOn8x8(i, j, cbMatrix);
-      dctOn8x8(i, j, crMatrix);
+      dctOn8x8(i, j, cbMatrix, "chrome");
+      dctOn8x8(i, j, crMatrix, "chrome");
     }
   }
   // now all matrices should have DCT applied on them

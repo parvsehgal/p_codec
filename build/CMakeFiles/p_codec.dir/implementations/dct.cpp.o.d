@@ -1,6 +1,6 @@
 CMakeFiles/p_codec.dir/implementations/dct.cpp.o: \
-  /Users/parvsehgal/Desktop/development/p_codec/implementations/dct.cpp \
-  /Users/parvsehgal/Desktop/development/p_codec/implementations/../headers/dct.hpp \
+  /Users/parvsehgal/Desktop/development/2projs/p_codec/implementations/dct.cpp \
+  /Users/parvsehgal/Desktop/development/2projs/p_codec/implementations/../headers/dct.hpp \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/vector \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__config \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__config_site \

@@ -53,10 +53,10 @@ RM = /opt/homebrew/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /Users/parvsehgal/Desktop/development/p_codec
+CMAKE_SOURCE_DIR = /Users/parvsehgal/Desktop/development/2projs/p_codec
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /Users/parvsehgal/Desktop/development/p_codec/build
+CMAKE_BINARY_DIR = /Users/parvsehgal/Desktop/development/2projs/p_codec/build
 
 # Include any dependencies generated for this target.
 include CMakeFiles/p_codec.dir/depend.make
@@ -73,46 +73,46 @@ CMakeFiles/p_codec.dir/codegen:
 .PHONY : CMakeFiles/p_codec.dir/codegen
 
 CMakeFiles/p_codec.dir/main.cpp.o: CMakeFiles/p_codec.dir/flags.make
-CMakeFiles/p_codec.dir/main.cpp.o: /Users/parvsehgal/Desktop/development/p_codec/main.cpp
+CMakeFiles/p_codec.dir/main.cpp.o: /Users/parvsehgal/Desktop/development/2projs/p_codec/main.cpp
 CMakeFiles/p_codec.dir/main.cpp.o: CMakeFiles/p_codec.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/parvsehgal/Desktop/development/p_codec/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/p_codec.dir/main.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/p_codec.dir/main.cpp.o -MF CMakeFiles/p_codec.dir/main.cpp.o.d -o CMakeFiles/p_codec.dir/main.cpp.o -c /Users/parvsehgal/Desktop/development/p_codec/main.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/parvsehgal/Desktop/development/2projs/p_codec/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/p_codec.dir/main.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/p_codec.dir/main.cpp.o -MF CMakeFiles/p_codec.dir/main.cpp.o.d -o CMakeFiles/p_codec.dir/main.cpp.o -c /Users/parvsehgal/Desktop/development/2projs/p_codec/main.cpp
 
 CMakeFiles/p_codec.dir/main.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/p_codec.dir/main.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/parvsehgal/Desktop/development/p_codec/main.cpp > CMakeFiles/p_codec.dir/main.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/parvsehgal/Desktop/development/2projs/p_codec/main.cpp > CMakeFiles/p_codec.dir/main.cpp.i
 
 CMakeFiles/p_codec.dir/main.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/p_codec.dir/main.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/parvsehgal/Desktop/development/p_codec/main.cpp -o CMakeFiles/p_codec.dir/main.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/parvsehgal/Desktop/development/2projs/p_codec/main.cpp -o CMakeFiles/p_codec.dir/main.cpp.s
 
 CMakeFiles/p_codec.dir/implementations/chroma.cpp.o: CMakeFiles/p_codec.dir/flags.make
-CMakeFiles/p_codec.dir/implementations/chroma.cpp.o: /Users/parvsehgal/Desktop/development/p_codec/implementations/chroma.cpp
+CMakeFiles/p_codec.dir/implementations/chroma.cpp.o: /Users/parvsehgal/Desktop/development/2projs/p_codec/implementations/chroma.cpp
 CMakeFiles/p_codec.dir/implementations/chroma.cpp.o: CMakeFiles/p_codec.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/parvsehgal/Desktop/development/p_codec/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/p_codec.dir/implementations/chroma.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/p_codec.dir/implementations/chroma.cpp.o -MF CMakeFiles/p_codec.dir/implementations/chroma.cpp.o.d -o CMakeFiles/p_codec.dir/implementations/chroma.cpp.o -c /Users/parvsehgal/Desktop/development/p_codec/implementations/chroma.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/parvsehgal/Desktop/development/2projs/p_codec/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/p_codec.dir/implementations/chroma.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/p_codec.dir/implementations/chroma.cpp.o -MF CMakeFiles/p_codec.dir/implementations/chroma.cpp.o.d -o CMakeFiles/p_codec.dir/implementations/chroma.cpp.o -c /Users/parvsehgal/Desktop/development/2projs/p_codec/implementations/chroma.cpp
 
 CMakeFiles/p_codec.dir/implementations/chroma.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/p_codec.dir/implementations/chroma.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/parvsehgal/Desktop/development/p_codec/implementations/chroma.cpp > CMakeFiles/p_codec.dir/implementations/chroma.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/parvsehgal/Desktop/development/2projs/p_codec/implementations/chroma.cpp > CMakeFiles/p_codec.dir/implementations/chroma.cpp.i
 
 CMakeFiles/p_codec.dir/implementations/chroma.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/p_codec.dir/implementations/chroma.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/parvsehgal/Desktop/development/p_codec/implementations/chroma.cpp -o CMakeFiles/p_codec.dir/implementations/chroma.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/parvsehgal/Desktop/development/2projs/p_codec/implementations/chroma.cpp -o CMakeFiles/p_codec.dir/implementations/chroma.cpp.s
 
 CMakeFiles/p_codec.dir/implementations/dct.cpp.o: CMakeFiles/p_codec.dir/flags.make
-CMakeFiles/p_codec.dir/implementations/dct.cpp.o: /Users/parvsehgal/Desktop/development/p_codec/implementations/dct.cpp
+CMakeFiles/p_codec.dir/implementations/dct.cpp.o: /Users/parvsehgal/Desktop/development/2projs/p_codec/implementations/dct.cpp
 CMakeFiles/p_codec.dir/implementations/dct.cpp.o: CMakeFiles/p_codec.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/parvsehgal/Desktop/development/p_codec/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/p_codec.dir/implementations/dct.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/p_codec.dir/implementations/dct.cpp.o -MF CMakeFiles/p_codec.dir/implementations/dct.cpp.o.d -o CMakeFiles/p_codec.dir/implementations/dct.cpp.o -c /Users/parvsehgal/Desktop/development/p_codec/implementations/dct.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/parvsehgal/Desktop/development/2projs/p_codec/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/p_codec.dir/implementations/dct.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/p_codec.dir/implementations/dct.cpp.o -MF CMakeFiles/p_codec.dir/implementations/dct.cpp.o.d -o CMakeFiles/p_codec.dir/implementations/dct.cpp.o -c /Users/parvsehgal/Desktop/development/2projs/p_codec/implementations/dct.cpp
 
 CMakeFiles/p_codec.dir/implementations/dct.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/p_codec.dir/implementations/dct.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/parvsehgal/Desktop/development/p_codec/implementations/dct.cpp > CMakeFiles/p_codec.dir/implementations/dct.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/parvsehgal/Desktop/development/2projs/p_codec/implementations/dct.cpp > CMakeFiles/p_codec.dir/implementations/dct.cpp.i
 
 CMakeFiles/p_codec.dir/implementations/dct.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/p_codec.dir/implementations/dct.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/parvsehgal/Desktop/development/p_codec/implementations/dct.cpp -o CMakeFiles/p_codec.dir/implementations/dct.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/parvsehgal/Desktop/development/2projs/p_codec/implementations/dct.cpp -o CMakeFiles/p_codec.dir/implementations/dct.cpp.s
 
 # Object files for target p_codec
 p_codec_OBJECTS = \
@@ -128,7 +128,7 @@ p_codec: CMakeFiles/p_codec.dir/implementations/chroma.cpp.o
 p_codec: CMakeFiles/p_codec.dir/implementations/dct.cpp.o
 p_codec: CMakeFiles/p_codec.dir/build.make
 p_codec: CMakeFiles/p_codec.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/Users/parvsehgal/Desktop/development/p_codec/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Linking CXX executable p_codec"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/Users/parvsehgal/Desktop/development/2projs/p_codec/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Linking CXX executable p_codec"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/p_codec.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
@@ -140,6 +140,6 @@ CMakeFiles/p_codec.dir/clean:
 .PHONY : CMakeFiles/p_codec.dir/clean
 
 CMakeFiles/p_codec.dir/depend:
-	cd /Users/parvsehgal/Desktop/development/p_codec/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /Users/parvsehgal/Desktop/development/p_codec /Users/parvsehgal/Desktop/development/p_codec /Users/parvsehgal/Desktop/development/p_codec/build /Users/parvsehgal/Desktop/development/p_codec/build /Users/parvsehgal/Desktop/development/p_codec/build/CMakeFiles/p_codec.dir/DependInfo.cmake "--color=$(COLOR)" p_codec
+	cd /Users/parvsehgal/Desktop/development/2projs/p_codec/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /Users/parvsehgal/Desktop/development/2projs/p_codec /Users/parvsehgal/Desktop/development/2projs/p_codec /Users/parvsehgal/Desktop/development/2projs/p_codec/build /Users/parvsehgal/Desktop/development/2projs/p_codec/build /Users/parvsehgal/Desktop/development/2projs/p_codec/build/CMakeFiles/p_codec.dir/DependInfo.cmake "--color=$(COLOR)" p_codec
 .PHONY : CMakeFiles/p_codec.dir/depend
 
