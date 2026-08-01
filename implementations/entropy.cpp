@@ -80,6 +80,31 @@ void entropy::runLevelon8x8(int first, int second,
     }
     cout << endl;
   }
+  // convert the zigzag to run level pairs
+  // i starts as 1 so as to avoid DC and only pick up AC
+  vector<tuple<int, int, int>> runLevelPairs;
+  int zeroCount = 0;
+  for (int i = 1; i < zigzag.size(); i++) {
+    if (zigzag[i] == 0) {
+      zeroCount++;
+    } else {
+      runLevelPairs.push_back({0, zeroCount, zigzag[i]});
+      zeroCount = 0;
+    }
+  }
+  if (!runLevelPairs.empty()) {
+    get<0>(runLevelPairs.back()) = 1;
+  } else {
+    runLevelPairs.push_back({1, 0, 0});
+  }
+  if (first == 0 && second == 0) {
+    for (int i = 0; i < runLevelPairs.size(); i++) {
+      auto [last, run, level] = runLevelPairs[i];
+      cout << last << " " << run << " " << level << endl;
+    }
+  }
+  // now huffman encode and append to encodedBitStream
+  //
 }
 // slit the tuple
 // then do 8x8 zig zag run level and huffman coding and append into a
