@@ -2,6 +2,7 @@
 #include <cmath>
 #include <cstddef>
 #include <iostream>
+#include <tuple>
 #include <vector>
 #define PI 3.1415926535897
 
@@ -45,14 +46,14 @@ void dct::dctOn8x8(unsigned int i, unsigned int j,
     }
   }
   if (i == 0 && j == 0) {
-    cout << "below is input matrix" << endl;
+    cout << "Before DCT/Quant" << endl;
     for (int row = 0; row < 8; row++) {
       for (int col = 0; col < 8; col++) {
         cout << input[row][col] << " ";
       }
       cout << endl;
     }
-    cout << "after DCT that same matrix" << endl;
+    cout << "after DCT/Quant" << endl;
     for (int row = 0; row < 8; row++) {
       for (int col = 0; col < 8; col++) {
         cout << matrix[row + i][col + j] << " ";
@@ -61,11 +62,11 @@ void dct::dctOn8x8(unsigned int i, unsigned int j,
     }
   }
 }
-void dct::performDCT(vector<unsigned char> &imageSubSample, unsigned int width,
-                     unsigned int height) {
+tuple<vector<vector<float>>, vector<vector<float>>, vector<vector<float>>>
+dct::performDCT(vector<unsigned char> &imageSubSample, unsigned int width,
+                unsigned int height) {
   this->width = width;
   this->height = height;
-  cout << "control is here----------------------------------" << endl;
   size_t totalSize = imageSubSample.size();
   unsigned int lumaSize = (totalSize * 2) / 3;
 
@@ -99,12 +100,6 @@ void dct::performDCT(vector<unsigned char> &imageSubSample, unsigned int width,
     }
   }
 
-  cout << "yMatrix DIM" << yMatrix[0].size() << " " << yMatrix.size() << endl;
-  cout << "cbMatrix DIM" << cbMatrix[0].size() << " " << cbMatrix.size()
-       << endl;
-  cout << "crMatrix DIM" << crMatrix[0].size() << " " << crMatrix.size()
-       << endl;
-
   // all matrices made now perform DCT on 8x8 blocks
 
   for (int i = 0; i < yMatrix.size(); i += 8) {
@@ -118,5 +113,6 @@ void dct::performDCT(vector<unsigned char> &imageSubSample, unsigned int width,
       dctOn8x8(i, j, crMatrix, "chrome");
     }
   }
-  // now all matrices should have DCT applied on them
+  // now all matrices should have DCT applied on them now return to main
+  return {yMatrix, cbMatrix, crMatrix};
 }

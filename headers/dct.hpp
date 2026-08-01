@@ -22,8 +22,9 @@ public:
       {99, 99, 99, 99, 99, 99, 99, 99}, {99, 99, 99, 99, 99, 99, 99, 99}};
   ;
 
-  void performDCT(vector<unsigned char> &imageSubSample, unsigned int width,
-                  unsigned int height);
+  tuple<vector<vector<float>>, vector<vector<float>>, vector<vector<float>>>
+  performDCT(vector<unsigned char> &imageSubSample, unsigned int width,
+             unsigned int height);
   void dctOn8x8(unsigned int i, unsigned int j, vector<vector<float>> &maxtix,
                 string component);
 };

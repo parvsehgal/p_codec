@@ -32,9 +32,10 @@ int main() {
 
   // STAGE 2
   dct dctObj;
-  dctObj.performDCT(imageSubSample, width, height);
+  auto [yMatrix, cbMatrix, crMatrix] =
+      dctObj.performDCT(imageSubSample, width, height);
 
   // STAGE 3
   entropy entropyObj;
-  entropyObj.zigzagRunlevel();
+  entropyObj.runLevel({yMatrix, cbMatrix, crMatrix});
 }
