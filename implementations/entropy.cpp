@@ -21,7 +21,6 @@ void entropy::huffmanEncode(int dc,
       auto [last, run, level] = currRunLevel[i];
       if (this->tcoeffTable.vlc_table.find({abs(last), abs(run), abs(level)}) !=
           tcoeffTable.vlc_table.end()) {
-        cout << "MATCH FOUND" << endl;
         // a match is found
         // add bits
         uint32_t bitsToAppend =
@@ -36,7 +35,6 @@ void entropy::huffmanEncode(int dc,
                       .second;
         this->bitWriterObj.addBits(bitsToAppend, len + 1);
       } else {
-        cout << "MATCH NOT FOUND" << endl;
         // use escape code logic
         auto [escBits, escLen] = this->tcoeffTable.escapeCode;
         this->bitWriterObj.addBits(escBits, escLen);                // marker
@@ -188,6 +186,6 @@ entropy::runLevel(const tuple<vector<vector<float>>, vector<vector<float>>,
   }
   this->bitWriterObj.flush();
   vector<unsigned char> compressedFile = std::move(this->bitWriterObj.buffer);
-  this->bitWriterObj.buffer = {0};
+  this->bitWriterObj.buffer.clear();
   return compressedFile;
 }

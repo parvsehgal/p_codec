@@ -1,14 +1,10 @@
-#include "headers/chroma.hpp"
-#include "headers/dct.hpp"
-#include "headers/entropy.hpp"
+#include "headers/coder.hpp"
 #include <cstddef>
-#include <fstream>
 #include <iostream>
 #include <string>
 using namespace std;
 
 int main() {
-  // get all input
   unsigned int height;
   unsigned int width;
   string filePath;
@@ -18,27 +14,6 @@ int main() {
   cout << "enter filePath" << endl;
   cin >> filePath;
 
-  // STAGE 1
-  chroma chromaObj;
-  vector<unsigned char> imageSubSample =
-      chromaObj.generateSubsample(height, width, filePath);
-  ofstream outputFile{"subSample.raw"};
-  outputFile.write(reinterpret_cast<char *>(imageSubSample.data()),
-                   imageSubSample.size());
-  unsigned int heightAdj = (16 - height % 16) % 16;
-  unsigned int widthAdj = (16 - width % 16) % 16;
-  height += heightAdj;
-  width += widthAdj;
-
-  // STAGE 2
-  dct dctObj;
-  auto [yMatrix, cbMatrix, crMatrix] =
-      dctObj.performDCT(imageSubSample, width, height);
-
-  // STAGE 3
-  entropy entropyObj;
-  vector<unsigned char> compressedFile =
-      entropyObj.runLevel({yMatrix, cbMatrix, crMatrix});
-  cout << "UNCOMPRESSED FILE SIZE = " << imageSubSample.size() << endl;
-  cout << "COMPRESSED FILE SIZE = " << compressedFile.size() << endl;
+  coder coderObj;
+  coderObj.encode(height, width, filePath);
 }
