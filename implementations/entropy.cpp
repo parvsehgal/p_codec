@@ -1,12 +1,55 @@
 #include "../headers/entropy.hpp"
+#include <cstdint>
 #include <iostream>
 #include <tuple>
 #include <vector>
 using namespace std;
 
-void entropy::runLevelon8x8(int first, int second,
-                            vector<vector<float>> &Matrix,
-                            vector<unsigned char> &encodedBitStream) {
+void entropy::huffmanEncode(int dc,
+                            vector<tuple<int, int, int>> &currRunLevel) {
+  // add the DC like straight up as an unsigned char
+  // then findd the vlc value for the other pairs | take into account the escape
+  // code
+  char DC = dc;
+  this->bitWriterObj.addBits(DC, 8);
+  bool hasAC = !(currRunLevel.size() == 1 && get<2>(currRunLevel[0]) == 0 &&
+                 get<1>(currRunLevel[0]) == 0);
+  this->bitWriterObj.addBits(hasAC ? 1 : 0, 1);
+  if (hasAC) {
+    // start encoding
+    for (int i = 0; i < currRunLevel.size(); i++) {
+      auto [last, run, level] = currRunLevel[i];
+      if (this->tcoeffTable.vlc_table.find({abs(last), abs(run), abs(level)}) !=
+          tcoeffTable.vlc_table.end()) {
+        cout << "MATCH FOUND" << endl;
+        // a match is found
+        // add bits
+        uint32_t bitsToAppend =
+            this->tcoeffTable.vlc_table[{abs(last), abs(run), abs(level)}]
+                .first;
+        if (level < 0) {
+          bitsToAppend = bitsToAppend << 1 | 1;
+        } else {
+          bitsToAppend = bitsToAppend << 1 | 0;
+        }
+        int len = this->tcoeffTable.vlc_table[{abs(last), abs(run), abs(level)}]
+                      .second;
+        this->bitWriterObj.addBits(bitsToAppend, len + 1);
+      } else {
+        cout << "MATCH NOT FOUND" << endl;
+        // use escape code logic
+        auto [escBits, escLen] = this->tcoeffTable.escapeCode;
+        this->bitWriterObj.addBits(escBits, escLen);                // marker
+        this->bitWriterObj.addBits(static_cast<uint32_t>(last), 1); // LAST
+        this->bitWriterObj.addBits(static_cast<uint32_t>(run), 6);  // RUN
+        this->bitWriterObj.addBits(static_cast<uint32_t>(level) & 0xFF, 8);
+      }
+    }
+  }
+}
+
+vector<tuple<int, int, int>>
+entropy::runLevelon8x8(int first, int second, vector<vector<float>> &Matrix) {
   // zigzag Scan of 8x8 matrix
   vector<int> zigzag;
   int n = 8;
@@ -80,8 +123,6 @@ void entropy::runLevelon8x8(int first, int second,
     }
     cout << endl;
   }
-  // convert the zigzag to run level pairs
-  // i starts as 1 so as to avoid DC and only pick up AC
   vector<tuple<int, int, int>> runLevelPairs;
   int zeroCount = 0;
   for (int i = 1; i < zigzag.size(); i++) {
@@ -103,16 +144,22 @@ void entropy::runLevelon8x8(int first, int second,
       cout << last << " " << run << " " << level << endl;
     }
   }
-  // now huffman encode and append to encodedBitStream
-  //
+  int currDc;
+  if (!zigzag.empty()) {
+    currDc = zigzag[0];
+  }
+  if (first == 0 && second == 0) {
+    cout << "curr DC " << currDc << endl;
+  }
+  // now return the zigzag array for huffman encoding
+  return runLevelPairs;
 }
 // slit the tuple
 // then do 8x8 zig zag run level and huffman coding and append into a
 // combined bitstream
-void entropy::runLevel(const tuple<vector<vector<float>>, vector<vector<float>>,
-                                   vector<vector<float>>> &yuvMatrices) {
-
-  vector<unsigned char> encodedBitStream;
+vector<unsigned char>
+entropy::runLevel(const tuple<vector<vector<float>>, vector<vector<float>>,
+                              vector<vector<float>>> &yuvMatrices) {
   cout << "control in entropy class" << endl;
   // go over the matrices in 8x8 chunks to read them in zig zig order
   auto yMatrix = get<0>(yuvMatrices);
@@ -120,17 +167,27 @@ void entropy::runLevel(const tuple<vector<vector<float>>, vector<vector<float>>,
   auto crMatrix = get<2>(yuvMatrices);
   for (int i = 0; i < yMatrix.size(); i += 8) {
     for (int j = 0; j < yMatrix[0].size(); j += 8) {
-      runLevelon8x8(i, j, yMatrix, encodedBitStream);
+      vector<tuple<int, int, int>> currRunLevel = runLevelon8x8(i, j, yMatrix);
+      int dc = yMatrix[i][j];
+      huffmanEncode(dc, currRunLevel);
     }
   }
   for (int i = 0; i < cbMatrix.size(); i += 8) {
     for (int j = 0; j < cbMatrix[0].size(); j += 8) {
-      runLevelon8x8(i, j, cbMatrix, encodedBitStream);
+      int dc = cbMatrix[i][j];
+      vector<tuple<int, int, int>> currRunLevel = runLevelon8x8(i, j, cbMatrix);
+      huffmanEncode(dc, currRunLevel);
     }
   }
   for (int i = 0; i < crMatrix.size(); i += 8) {
     for (int j = 0; j < crMatrix[0].size(); j += 8) {
-      runLevelon8x8(i, j, crMatrix, encodedBitStream);
+      int dc = crMatrix[i][j];
+      vector<tuple<int, int, int>> currRunLevel = runLevelon8x8(i, j, crMatrix);
+      huffmanEncode(dc, currRunLevel);
     }
   }
+  this->bitWriterObj.flush();
+  vector<unsigned char> compressedFile = std::move(this->bitWriterObj.buffer);
+  this->bitWriterObj.buffer = {0};
+  return compressedFile;
 }

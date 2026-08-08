@@ -9,6 +9,7 @@ set(SOURCES
     implementations/chroma.cpp
     implementations/dct.cpp
     implementations/entropy.cpp
+    implementations/bitWriter.cpp
 )
 
 # Create executable

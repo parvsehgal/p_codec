@@ -34,7 +34,12 @@ take the sumSample buffer as input split into 8x8 blocks and perform DCT and qua
 
 --Entropy class
 
-take in quantized coefficients arrage in zig-zag pattern and apply run level coding /huffman coding ?
+take in quantized coefficients arrage in zig-zag pattern and apply run level coding /huffman coding{
+  send the run level pairs of each 8x8 section and pass them to a function that uses the bitwriter class to append the bits to its own stream
+  after every 8x8 block has been added to the bitstream then the flush function should be executed and the its bitstream should be moved to a returnable variable this should give use the final compressed file
+
+  should be able to start wroking on a decoder
+}
 
 
 --------------------------------------------------------entropy

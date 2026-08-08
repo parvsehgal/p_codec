@@ -37,5 +37,8 @@ int main() {
 
   // STAGE 3
   entropy entropyObj;
-  entropyObj.runLevel({yMatrix, cbMatrix, crMatrix});
+  vector<unsigned char> compressedFile =
+      entropyObj.runLevel({yMatrix, cbMatrix, crMatrix});
+  cout << "UNCOMPRESSED FILE SIZE = " << imageSubSample.size() << endl;
+  cout << "COMPRESSED FILE SIZE = " << compressedFile.size() << endl;
 }
