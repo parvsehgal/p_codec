@@ -20,7 +20,7 @@ vector<unsigned char> coder::encode(unsigned int height, unsigned int width,
       this->dctObj.performDCT(imageSubSample, width, height);
   vector<unsigned char> compressedFile =
       this->entropyObj.runLevel({yMatrix, cbMatrix, crMatrix});
-  cout << "UNCOMPRESSED FILE SIZE= " << imageSubSample.size() << endl;
+  cout << "UNCOMPRESSED FILE SIZE= " << imageSubSample.size() * 2 << endl;
   cout << "COMPRESSED FILE SIZE= " << compressedFile.size() << endl;
   return compressedFile;
 }
