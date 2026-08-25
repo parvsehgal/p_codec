@@ -37,7 +37,8 @@ void entropy::huffmanEncode(int dc,
       } else {
         // use escape code logic
         auto [escBits, escLen] = this->tcoeffTable.escapeCode;
-        this->bitWriterObj.addBits(escBits, escLen);                // marker
+        this->bitWriterObj.addBits(escBits, escLen);
+        // marker
         this->bitWriterObj.addBits(static_cast<uint32_t>(last), 1); // LAST
         this->bitWriterObj.addBits(static_cast<uint32_t>(run), 6);  // RUN
         this->bitWriterObj.addBits(static_cast<uint32_t>(level) & 0xFF, 8);
@@ -58,7 +59,6 @@ entropy::runLevelon8x8(int first, int second, vector<vector<float>> &Matrix) {
   for (int len = 1; len <= mn; ++len) {
     for (int i = 0; i < len; ++i) {
       zigzag.push_back(Matrix[row + first][col + second]);
-
       if (i + 1 == len)
         break;
       if (row_inc)
@@ -66,10 +66,8 @@ entropy::runLevelon8x8(int first, int second, vector<vector<float>> &Matrix) {
       else
         --row, ++col;
     }
-
     if (len == mn)
       break;
-
     if (row_inc)
       ++row, row_inc = false;
     else
@@ -93,7 +91,6 @@ entropy::runLevelon8x8(int first, int second, vector<vector<float>> &Matrix) {
     len = (diag > mn) ? mn : diag;
     for (int i = 0; i < len; ++i) {
       zigzag.push_back(Matrix[row + first][col + second]);
-
       if (i + 1 == len)
         break;
       if (row_inc)
@@ -188,4 +185,188 @@ entropy::runLevel(const tuple<vector<vector<float>>, vector<vector<float>>,
   vector<unsigned char> compressedFile = std::move(this->bitWriterObj.buffer);
   this->bitWriterObj.buffer.clear();
   return compressedFile;
+}
+
+// ============================= DECODE SIDE =============================
+
+void entropy::buildReverseVlcTable() {
+  if (reverseVlcTableBuilt)
+    return;
+  for (const auto &entry : tcoeffTable.vlc_table) {
+    auto [last, run, level] = entry.first;
+    auto [bits, len] = entry.second;
+    uint32_t key = (bits << 5) | static_cast<uint32_t>(len);
+    reverseVlcTable[key] = {last, run, level};
+  }
+  reverseVlcTableBuilt = true;
+}
+
+// Replays the exact same diagonal zigzag traversal runLevelon8x8 used, but
+// records (row, col) positions instead of reading matrix values, so decode
+// can scatter the rebuilt 64-element array back to the right cells.
+vector<pair<int, int>> entropy::zigzagOrder() {
+  vector<pair<int, int>> order;
+  int n = 8;
+  int m = 8;
+  int row = 0, col = 0;
+  bool row_inc = 0;
+  int mn = min(m, n);
+  for (int len = 1; len <= mn; ++len) {
+    for (int i = 0; i < len; ++i) {
+      order.push_back({row, col});
+      if (i + 1 == len)
+        break;
+      if (row_inc)
+        ++row, --col;
+      else
+        --row, ++col;
+    }
+    if (len == mn)
+      break;
+    if (row_inc)
+      ++row, row_inc = false;
+    else
+      ++col, row_inc = true;
+  }
+  if (row == 0) {
+    if (col == m - 1)
+      ++row;
+    else
+      ++col;
+    row_inc = 1;
+  } else {
+    if (row == n - 1)
+      ++col;
+    else
+      ++row;
+    row_inc = 0;
+  }
+  int MAX = max(m, n) - 1;
+  for (int len, diag = MAX; diag > 0; --diag) {
+    len = (diag > mn) ? mn : diag;
+    for (int i = 0; i < len; ++i) {
+      order.push_back({row, col});
+      if (i + 1 == len)
+        break;
+      if (row_inc)
+        ++row, --col;
+      else
+        ++col, --row;
+    }
+    if (row == 0 || col == m - 1) {
+      if (col == m - 1)
+        ++row;
+      else
+        ++col;
+      row_inc = true;
+    } else if (col == 0 || row == n - 1) {
+      if (row == n - 1)
+        ++col;
+      else
+        ++row;
+      row_inc = false;
+    }
+  }
+  return order;
+}
+
+void entropy::decodeBlock(bitReader &reader, vector<vector<float>> &matrix,
+                          int i, int j) {
+  buildReverseVlcTable();
+  static const vector<pair<int, int>> order = zigzagOrder();
+
+  // DC: 8 bits, signed (mirrors `char DC = dc` on encode).
+  int8_t dcRaw = static_cast<int8_t>(reader.readBits(8));
+  int dc = dcRaw;
+
+  vector<int> zigzag(64, 0);
+  zigzag[0] = dc;
+
+  int hasAC = reader.readBit();
+  if (hasAC) {
+    auto [escBits, escLen] = tcoeffTable.escapeCode;
+    int idx = 1;
+    bool last = false;
+    // Keep decoding (last,run,level) pairs until we hit one with last==1,
+    // matching how huffmanEncode wrote them.
+    while (!last) {
+      uint32_t code = 0;
+      int len = 0;
+      bool matched = false;
+      int curLast = 0, run = 0, level = 0;
+      while (len < 16) {
+        int bit = reader.readBit();
+        code = (code << 1) | static_cast<uint32_t>(bit);
+        len++;
+        if (code == static_cast<uint32_t>(escBits) && len == escLen) {
+          curLast = reader.readBit();
+          run = static_cast<int>(reader.readBits(6));
+          int8_t lvl = static_cast<int8_t>(reader.readBits(8));
+          level = lvl;
+          matched = true;
+          break;
+        }
+        uint32_t key = (code << 5) | static_cast<uint32_t>(len);
+        auto it = reverseVlcTable.find(key);
+        if (it != reverseVlcTable.end()) {
+          auto [l, r, lv] = it->second;
+          int sign = reader.readBit();
+          curLast = l;
+          run = r;
+          level = sign ? -lv : lv;
+          matched = true;
+          break;
+        }
+      }
+      if (!matched) {
+        // Malformed / truncated stream -- bail out of this block rather
+        // than spinning forever.
+        break;
+      }
+      for (int z = 0; z < run && idx < 64; z++) {
+        zigzag[idx++] = 0;
+      }
+      if (idx < 64) {
+        zigzag[idx++] = level;
+      }
+      last = (curLast == 1);
+      if (idx >= 64) {
+        break;
+      }
+    }
+  }
+
+  for (int k = 0; k < 64; k++) {
+    auto [r, c] = order[k];
+    matrix[i + r][j + c] = static_cast<float>(zigzag[k]);
+  }
+}
+
+tuple<vector<vector<float>>, vector<vector<float>>, vector<vector<float>>>
+entropy::runLevelDecode(const vector<unsigned char> &compressedFile,
+                        unsigned int width, unsigned int height) {
+  bitReader reader(compressedFile);
+
+  vector<vector<float>> yMatrix(height, vector<float>(width, 0));
+  vector<vector<float>> cbMatrix(height / 2, vector<float>(width / 2, 0));
+  vector<vector<float>> crMatrix(height / 2, vector<float>(width / 2, 0));
+
+  // Same order the encoder used: all Y blocks, then all Cb, then all Cr.
+  for (int i = 0; i < yMatrix.size(); i += 8) {
+    for (int j = 0; j < yMatrix[0].size(); j += 8) {
+      decodeBlock(reader, yMatrix, i, j);
+    }
+  }
+  for (int i = 0; i < cbMatrix.size(); i += 8) {
+    for (int j = 0; j < cbMatrix[0].size(); j += 8) {
+      decodeBlock(reader, cbMatrix, i, j);
+    }
+  }
+  for (int i = 0; i < crMatrix.size(); i += 8) {
+    for (int j = 0; j < crMatrix[0].size(); j += 8) {
+      decodeBlock(reader, crMatrix, i, j);
+    }
+  }
+
+  return {yMatrix, cbMatrix, crMatrix};
 }
