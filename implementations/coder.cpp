@@ -1,6 +1,7 @@
 #include "../headers/coder.hpp"
 #include <fstream>
 #include <iostream>
+#include <iterator>
 using namespace std;
 
 vector<unsigned char> coder::encode(unsigned int height, unsigned int width,
@@ -10,12 +11,10 @@ vector<unsigned char> coder::encode(unsigned int height, unsigned int width,
   ofstream outputFile{"codec.raw"};
   outputFile.write(reinterpret_cast<char *>(imageSubSample.data()),
                    imageSubSample.size());
-
   unsigned int heightAdj = (16 - height % 16) % 16;
   unsigned int widthAdj = (16 - width % 16) % 16;
   height += heightAdj;
   width += widthAdj;
-
   auto [yMatrix, cbMatrix, crMatrix] =
       this->dctObj.performDCT(imageSubSample, width, height);
   vector<unsigned char> compressedFile =
@@ -23,4 +22,29 @@ vector<unsigned char> coder::encode(unsigned int height, unsigned int width,
   cout << "UNCOMPRESSED FILE SIZE= " << imageSubSample.size() * 2 << endl;
   cout << "COMPRESSED FILE SIZE= " << compressedFile.size() << endl;
   return compressedFile;
+}
+
+void coder::decode(unsigned int height, unsigned int width,
+                   string compressedFilePath, string outputPath) {
+  ifstream inputFile{compressedFilePath, std::ios::binary};
+  vector<unsigned char> compressedFile(
+      (istreambuf_iterator<char>(inputFile)), istreambuf_iterator<char>());
+
+  cout << "COMPRESSED FILE SIZE (read) = " << compressedFile.size() << endl;
+
+  unsigned int heightAdj = (16 - height % 16) % 16;
+  unsigned int widthAdj = (16 - width % 16) % 16;
+  unsigned int paddedHeight = height + heightAdj;
+  unsigned int paddedWidth = width + widthAdj;
+
+  auto [yMatrix, cbMatrix, crMatrix] = this->entropyObj.runLevelDecode(
+      compressedFile, paddedWidth, paddedHeight);
+
+  vector<unsigned char> yuvBuffer =
+      this->dctObj.performIDCT(yMatrix, cbMatrix, crMatrix);
+
+  this->chromaObj.decode(yuvBuffer, paddedHeight, paddedWidth, height, width,
+                         outputPath);
+
+  cout << "wrote decoded raw RGB to " << outputPath << endl;
 }

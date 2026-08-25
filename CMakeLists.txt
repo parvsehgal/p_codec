@@ -10,6 +10,7 @@ set(SOURCES
     implementations/dct.cpp
     implementations/entropy.cpp
     implementations/bitWriter.cpp
+    implementations/bitReader.cpp
     implementations/coder.cpp
 )
 
