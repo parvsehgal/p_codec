@@ -41,6 +41,23 @@ take in quantized coefficients arrage in zig-zag pattern and apply run level cod
   should be able to start wroking on a decoder
 }
 
+---decode loop
+a bit reader class
+inverse Entropy class
+inverse DCT 
+inverse chroma subsampling
+
+
 
 --------------------------------------------------------entropy
 if get time setup inverse DCT to check if it can be converted back to yuv420 that works  
+
+--------------------------------- 
+remaining todos
+  add the decode loop
+  add a header to the compressed file 
+  
+  add an attractive Read me 
+  and psnr metrics
+
+  make a binary downloadable via curl
