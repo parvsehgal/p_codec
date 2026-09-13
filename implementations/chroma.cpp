@@ -1,5 +1,4 @@
 #include "../headers/chroma.hpp"
-#include <cstddef>
 #include <fstream>
 #include <iostream>
 #include <vector>

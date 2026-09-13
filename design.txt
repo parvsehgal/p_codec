@@ -61,3 +61,11 @@ remaining todos
   and psnr metrics
 
   make a binary downloadable via curl
+
+-----temp ---
+in decode loop start reading the bits one by one as soon as we have a complete 8x8 run level pairs pushh them to an arrays of 
+those pairs ? so vector<vector<tuple<int,int,int>>> combinedMatrices then have a big empty float matrix and then fill it one by one with reversing zigzaging the each complete set of pairs 
+
+then do inverse DCT on them convert to a one giant unsigned char array and then convert to a file 
+
+

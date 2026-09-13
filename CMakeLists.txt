@@ -11,6 +11,7 @@ set(SOURCES
     implementations/entropy.cpp
     implementations/bitWriter.cpp
     implementations/coder.cpp
+    implementations/bitReader.cpp
 )
 
 # Create executable

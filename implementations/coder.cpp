@@ -1,4 +1,5 @@
 #include "../headers/coder.hpp"
+#include <cstddef>
 #include <fstream>
 #include <iostream>
 using namespace std;
@@ -19,8 +20,23 @@ vector<unsigned char> coder::encode(unsigned int height, unsigned int width,
   auto [yMatrix, cbMatrix, crMatrix] =
       this->dctObj.performDCT(imageSubSample, width, height);
   vector<unsigned char> compressedFile =
-      this->entropyObj.runLevel({yMatrix, cbMatrix, crMatrix});
+      this->entropyObj.runLevel({yMatrix, cbMatrix, crMatrix}, width, height);
   cout << "UNCOMPRESSED FILE SIZE= " << imageSubSample.size() * 2 << endl;
   cout << "COMPRESSED FILE SIZE= " << compressedFile.size() << endl;
   return compressedFile;
+}
+
+void coder ::decode(string compressedFileName) {
+  cout << "control in decode function" << endl;
+  cout << compressedFileName << endl;
+  // extract the height and width from the compressedFile
+  ifstream compressedFile{compressedFileName};
+  vector<unsigned char> dims(4);
+  compressedFile.read(reinterpret_cast<char *>(dims.data()), dims.size());
+  int width = static_cast<int>((dims[0] << 8) | (dims[1]));
+  int height = static_cast<int>((dims[2] << 8) | (dims[3]));
+
+  // after we have the dimensions start to do reverse entropy and create
+  // runlevel pairs from bytes
+  this->entropyObj.reverseEntropy(width, height, compressedFileName);
 }

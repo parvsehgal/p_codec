@@ -11,4 +11,6 @@ public:
 
   vector<unsigned char> encode(unsigned int height, unsigned int width,
                                string file_path);
+
+  void decode(string compressedFileName);
 };

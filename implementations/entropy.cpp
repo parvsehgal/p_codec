@@ -1,10 +1,27 @@
 #include "../headers/entropy.hpp"
+#include <cstddef>
 #include <cstdint>
+#include <fstream>
+#include <ios>
 #include <iostream>
 #include <tuple>
 #include <vector>
 using namespace std;
 
+vector<vector<tuple<int, int, int>>>
+entropy ::bytesToRunlevel(int width, int height,
+                          vector<unsigned char> fileBuffer) {
+  vector<vector<tuple<int, int, int>>> res;
+  // remove the dimensions and start to read the file
+  int dimensionsQty = 4;
+  while (dimensionsQty--)
+    fileBuffer.erase(fileBuffer.begin());
+  cout << "file without dims " << fileBuffer.size() << endl;
+  // make a bit reader
+  // this->bitReaderObj.reader(fileBuffer);
+
+  return res;
+}
 void entropy::huffmanEncode(int dc,
                             vector<tuple<int, int, int>> &currRunLevel) {
   // add the DC like straight up as an unsigned char
@@ -115,14 +132,17 @@ entropy::runLevelon8x8(int first, int second, vector<vector<float>> &Matrix) {
       row_inc = false;
     }
   }
+  // this is for testing
   if (first == 0 && second == 0) {
     for (int i = 0; i < zigzag.size(); i++) {
       cout << zigzag[i] << " ";
     }
     cout << endl;
   }
+  //-------------------------
   vector<tuple<int, int, int>> runLevelPairs;
   int zeroCount = 0;
+  // we are skipping the DC and handeling that seprately
   for (int i = 1; i < zigzag.size(); i++) {
     if (zigzag[i] == 0) {
       zeroCount++;
@@ -155,10 +175,23 @@ entropy::runLevelon8x8(int first, int second, vector<vector<float>> &Matrix) {
 // slit the tuple
 // then do 8x8 zig zag run level and huffman coding and append into a
 // combined bitstream
+string entropy::dimensionsToBinaryLiteral(uint32_t num) {
+  string res = "";
+  for (int i = 31; i >= 0; i--)
+    res += ((num >> i) & 1) ? '1' : '0';
+  return res;
+}
 vector<unsigned char>
 entropy::runLevel(const tuple<vector<vector<float>>, vector<vector<float>>,
-                              vector<vector<float>>> &yuvMatrices) {
+                              vector<vector<float>>> &yuvMatrices,
+                  int width, int height) {
   cout << "control in entropy class" << endl;
+  // first add the dimensions of the raw image as a sort of pseudo header to the
+  // bitstream
+  this->bitWriterObj.addBits(width, 16);
+  this->bitWriterObj.addBits(height, 16);
+  // no need to flush since this is clean 4 bits
+
   // go over the matrices in 8x8 chunks to read them in zig zig order
   auto yMatrix = get<0>(yuvMatrices);
   auto cbMatrix = get<1>(yuvMatrices);
@@ -188,4 +221,16 @@ entropy::runLevel(const tuple<vector<vector<float>>, vector<vector<float>>,
   vector<unsigned char> compressedFile = std::move(this->bitWriterObj.buffer);
   this->bitWriterObj.buffer.clear();
   return compressedFile;
+}
+
+void entropy::reverseEntropy(int width, int height, string compressedFileName) {
+  // make run level last pairs from bytes of the the file
+  ifstream compressedFile{compressedFileName, std::ios::binary | std::ios::ate};
+  size_t fileSize = compressedFile.tellg();
+  compressedFile.seekg(0, std::ios::beg);
+  cout << fileSize << endl;
+  vector<unsigned char> fileBuffer(fileSize);
+  compressedFile.read(reinterpret_cast<char *>(fileBuffer.data()), fileSize);
+  vector<vector<tuple<int, int, int>>> allPairs =
+      bytesToRunlevel(width, height, fileBuffer);
 }
