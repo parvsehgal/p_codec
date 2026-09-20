@@ -5,28 +5,16 @@
 #include <ios>
 #include <iostream>
 #include <tuple>
+#include <unordered_map>
 #include <vector>
 using namespace std;
 
-vector<vector<tuple<int, int, int>>>
-entropy ::bytesToRunlevel(int width, int height,
-                          vector<unsigned char> fileBuffer) {
-  vector<vector<tuple<int, int, int>>> res;
-  // remove the dimensions and start to read the file
-  int dimensionsQty = 4;
-  while (dimensionsQty--)
-    fileBuffer.erase(fileBuffer.begin());
-  cout << "file without dims " << fileBuffer.size() << endl;
-  // make a bit reader
-  // this->bitReaderObj.reader(fileBuffer);
-
-  return res;
-}
+// this functions encodes an 8x8 block
 void entropy::huffmanEncode(int dc,
                             vector<tuple<int, int, int>> &currRunLevel) {
   // add the DC like straight up as an unsigned char
-  // then findd the vlc value for the other pairs | take into account the escape
-  // code
+  // then findd the vlc value for the other pairs | take into account the
+  // escape code
   char DC = dc;
   this->bitWriterObj.addBits(DC, 8);
   bool hasAC = !(currRunLevel.size() == 1 && get<2>(currRunLevel[0]) == 0 &&
@@ -175,19 +163,13 @@ entropy::runLevelon8x8(int first, int second, vector<vector<float>> &Matrix) {
 // slit the tuple
 // then do 8x8 zig zag run level and huffman coding and append into a
 // combined bitstream
-string entropy::dimensionsToBinaryLiteral(uint32_t num) {
-  string res = "";
-  for (int i = 31; i >= 0; i--)
-    res += ((num >> i) & 1) ? '1' : '0';
-  return res;
-}
 vector<unsigned char>
 entropy::runLevel(const tuple<vector<vector<float>>, vector<vector<float>>,
                               vector<vector<float>>> &yuvMatrices,
                   int width, int height) {
   cout << "control in entropy class" << endl;
-  // first add the dimensions of the raw image as a sort of pseudo header to the
-  // bitstream
+  // first add the dimensions of the raw image as a sort of pseudo header to
+  // the bitstream
   this->bitWriterObj.addBits(width, 16);
   this->bitWriterObj.addBits(height, 16);
   // no need to flush since this is clean 4 bits
@@ -222,15 +204,118 @@ entropy::runLevel(const tuple<vector<vector<float>>, vector<vector<float>>,
   this->bitWriterObj.buffer.clear();
   return compressedFile;
 }
+//=======================================DECODE FUNCTIONS=====================
+pair<int, vector<tuple<int, int, int>>> entropy::getBlock() {
+  // get DC
+  pair<int, vector<tuple<int, int, int>>> res;
+  int DC = 0;
+  int k = 8;
+  while (k--) {
+    DC = (DC << 1) | this->bitReaderObj.getBit();
+  }
+  if (DC & 0x80)
+    DC -= 256;
+  bool hasAC = this->bitReaderObj.getBit();
+  uint32_t currBits = 0;
+  int len = 0;
+  int kMaxLen = 12;
+  res.first = DC;
+  if (!hasAC) {
+    return {DC, {{1, 0, 0}}};
+  }
+  while (len < kMaxLen) {
+    currBits = (currBits << 1) | this->bitReaderObj.getBit();
+    len++;
+    uint32_t toCheck = (currBits << 5) | static_cast<uint32_t>(len);
+    auto it = this->reverseMap.find(toCheck);
+    if (it != this->reverseMap.end()) {
+      cout << "NORMAL CODE ENCOUNTERED +++++++++" << endl;
+      auto toPush = it->second;
+      // get the signBit as well
+      int signBit = this->bitReaderObj.getBit();
+      if (signBit) {
+        res.second.push_back({get<0>(toPush), get<1>(toPush), -get<2>(toPush)});
+      } else {
+        res.second.push_back({get<0>(toPush), get<1>(toPush), get<2>(toPush)});
+      }
+      if (get<0>(toPush) == 1) {
+        return res; // last == 1, end of block
+      }
+      currBits = 0;
+      len = 0;
+    } else if (len == this->tcoeffTable.escapeCode.second &&
+               currBits == this->tcoeffTable.escapeCode.first) {
+      // this is an escape code
+      cout << "ESCAPE CODE ENCOUNTERED ---------" << endl;
+      int last = this->bitReaderObj.getBit();
+      int run = 0;
+      int level = 0;
+      for (int i = 0; i < 6; i++) {
+        run = (run << 1) | this->bitReaderObj.getBit();
+      }
+      for (int i = 0; i < 8; i++) {
+        level = (level << 1) | this->bitReaderObj.getBit();
+      }
+      if (level & 0x80)
+        level -= 256;
+      res.second.push_back({last, run, level});
+      currBits = 0;
+      len = 0;
+      if (last == 1)
+        return res; // end of block
+    }
+  }
+  throw std::runtime_error(
+      "entropy::getBlock: no matching VLC or escape code found within " +
+      std::to_string(kMaxLen) + " bits (bitstream desync or bad table)");
+}
+
+void entropy::reverseTheMap() {
+  for (const auto &entry : this->tcoeffTable.vlc_table) {
+    auto [last, run, level] = entry.first;
+    auto [bits, len] = entry.second;
+    uint32_t key = (bits << 5) | static_cast<uint32_t>(len);
+    this->reverseMap[key] = {last, run, level};
+  }
+}
+int blocksPerPlane(int W, int H) {
+  int blocksWide = (W + 7) / 8;
+  int blocksHigh = (H + 7) / 8;
+  return blocksWide * blocksHigh;
+}
+vector<pair<int, vector<tuple<int, int, int>>>>
+entropy::getAllPairs(int width, int height, vector<unsigned char> &fileBuffer) {
+  // first make a reverse vlc_table
+  reverseTheMap();
+  vector<pair<int, vector<tuple<int, int, int>>>> res;
+  // remove the dimesntions/header from the buffer
+  int k = 4;
+  while (k--) {
+    fileBuffer.erase(fileBuffer.begin());
+  }
+  this->bitReaderObj.init(fileBuffer);
+  // get the total number of blocks
+  int totalBlocks =
+      blocksPerPlane(width, height)                            // Y
+      + 2 * blocksPerPlane((width + 1) / 2, (height + 1) / 2); // CB + CR
+  cout << "total Block count ? " << totalBlocks << endl;
+  // start building res block by block
+  for (int i = 0; i < totalBlocks; i++) {
+    auto currBlock = getBlock();
+    res.push_back(currBlock);
+  }
+  return res;
+}
 
 void entropy::reverseEntropy(int width, int height, string compressedFileName) {
   // make run level last pairs from bytes of the the file
   ifstream compressedFile{compressedFileName, std::ios::binary | std::ios::ate};
   size_t fileSize = compressedFile.tellg();
   compressedFile.seekg(0, std::ios::beg);
-  cout << fileSize << endl;
   vector<unsigned char> fileBuffer(fileSize);
   compressedFile.read(reinterpret_cast<char *>(fileBuffer.data()), fileSize);
-  vector<vector<tuple<int, int, int>>> allPairs =
-      bytesToRunlevel(width, height, fileBuffer);
+
+  vector<pair<int, vector<tuple<int, int, int>>>> allPairs =
+      getAllPairs(width, height, fileBuffer);
+  cout << "big if here" << endl;
 }
