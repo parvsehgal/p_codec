@@ -37,5 +37,7 @@ void coder ::decode(string compressedFileName) {
 
   // after we have the dimensions start to do reverse entropy and create
   // runlevel pairs from bytes
-  this->entropyObj.reverseEntropy(width, height, compressedFileName);
+  auto decodedBlocks =
+      this->entropyObj.reverseEntropy(width, height, compressedFileName);
+  this->dctObj.performIDCT(width, height, decodedBlocks);
 }

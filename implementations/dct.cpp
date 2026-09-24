@@ -115,3 +115,32 @@ dct::performDCT(vector<unsigned char> &imageSubSample, unsigned int width,
   // now all matrices should have DCT applied on them now return to main
   return {yMatrix, cbMatrix, crMatrix};
 }
+//==================DECODE FUNCTIONS===================================
+void dct::IDCTon8x8(int i, int j, vector<vector<float>> &Matrix, int lumeChrome,
+                    block currBlock) {
+  cout << "control here" << endl;
+  // send currBlock to a function that converts the block into a zigzig list
+  // then into reversed zigzig ordered matrix then perform IDCT and reverse
+  // Quantization and fill the Matrix with those values and return
+}
+void dct::performIDCT(int width, int height, blocks &decodedBlocks) {
+  // first make empty matrices for Y , CB and CR
+  vector<vector<float>> yMatrix(height, vector<float>(width));
+  vector<vector<float>> cbMatrix(height / 2, vector<float>(width / 2));
+  vector<vector<float>> crMatrix(height / 2, vector<float>(width / 2));
+
+  cout << "control here" << endl;
+  int blockCounter = 0;
+  for (int i = 0; i < yMatrix.size(); i += 8) {
+    for (int j = 0; j < yMatrix[0].size(); j++) {
+      // single 8x8 matrix from block and IDCT + reverse Quantization
+      // need i,j,matrix,lume/chrome flag,block[blockCount] ,
+      IDCTon8x8(i, j, yMatrix, 0, decodedBlocks[blockCounter++]);
+    }
+  }
+  for (int i = 0; i < cbMatrix.size(); i += 8) {
+    for (int j = 0; j < cbMatrix[0].size(); j++) {
+      // single 8x8 matrix from block and IDCT + reverse Quantization
+    }
+  }
+}

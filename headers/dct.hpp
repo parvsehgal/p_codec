@@ -27,4 +27,10 @@ public:
              unsigned int height);
   void dctOn8x8(unsigned int i, unsigned int j, vector<vector<float>> &maxtix,
                 string component);
+  //========================================DECODE LOGIC================
+  using blocks = vector<pair<int, vector<tuple<int, int, int>>>>;
+  using block = pair<int, vector<tuple<int, int, int>>>;
+  void performIDCT(int width, int height, blocks &decodedBlocks);
+  void IDCTon8x8(int i, int j, vector<vector<float>> &Matrix, int lumeChrome,
+                 block currBlock);
 };

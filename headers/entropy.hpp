@@ -24,7 +24,8 @@ public:
   //==================DECODE FUNCTIONS===================================
   unordered_map<uint32_t, tuple<int, int, int>> reverseMap;
   void reverseTheMap();
-  void reverseEntropy(int width, int height, string compressedFileName);
+  vector<pair<int, vector<tuple<int, int, int>>>>
+  reverseEntropy(int width, int height, string compressedFileName);
   vector<pair<int, vector<tuple<int, int, int>>>>
   getAllPairs(int width, int height, vector<unsigned char> &fileBuffer);
   pair<int, vector<tuple<int, int, int>>> getBlock();

@@ -229,7 +229,7 @@ pair<int, vector<tuple<int, int, int>>> entropy::getBlock() {
     uint32_t toCheck = (currBits << 5) | static_cast<uint32_t>(len);
     auto it = this->reverseMap.find(toCheck);
     if (it != this->reverseMap.end()) {
-      cout << "NORMAL CODE ENCOUNTERED +++++++++" << endl;
+      // cout << "NORMAL CODE ENCOUNTERED " << endl;
       auto toPush = it->second;
       // get the signBit as well
       int signBit = this->bitReaderObj.getBit();
@@ -246,7 +246,7 @@ pair<int, vector<tuple<int, int, int>>> entropy::getBlock() {
     } else if (len == this->tcoeffTable.escapeCode.second &&
                currBits == this->tcoeffTable.escapeCode.first) {
       // this is an escape code
-      cout << "ESCAPE CODE ENCOUNTERED ---------" << endl;
+      // cout << "ESCAPE CODE ENCOUNTERED ---------" << endl;
       int last = this->bitReaderObj.getBit();
       int run = 0;
       int level = 0;
@@ -307,7 +307,8 @@ entropy::getAllPairs(int width, int height, vector<unsigned char> &fileBuffer) {
   return res;
 }
 
-void entropy::reverseEntropy(int width, int height, string compressedFileName) {
+vector<pair<int, vector<tuple<int, int, int>>>>
+entropy::reverseEntropy(int width, int height, string compressedFileName) {
   // make run level last pairs from bytes of the the file
   ifstream compressedFile{compressedFileName, std::ios::binary | std::ios::ate};
   size_t fileSize = compressedFile.tellg();
@@ -318,4 +319,6 @@ void entropy::reverseEntropy(int width, int height, string compressedFileName) {
   vector<pair<int, vector<tuple<int, int, int>>>> allPairs =
       getAllPairs(width, height, fileBuffer);
   cout << "big if here" << endl;
+  cout << allPairs[0].first << endl;
+  return allPairs;
 }
