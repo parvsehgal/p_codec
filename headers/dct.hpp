@@ -30,6 +30,7 @@ public:
   //========================================DECODE LOGIC================
   using blocks = vector<pair<int, vector<tuple<int, int, int>>>>;
   using block = pair<int, vector<tuple<int, int, int>>>;
+  vector<vector<float>> getMatrixFromBlock(block &currBlock);
   void performIDCT(int width, int height, blocks &decodedBlocks);
   void IDCTon8x8(int i, int j, vector<vector<float>> &Matrix, int lumeChrome,
                  block currBlock);

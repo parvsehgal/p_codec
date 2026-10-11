@@ -25,7 +25,7 @@ vector<unsigned char> coder::encode(unsigned int height, unsigned int width,
   cout << "COMPRESSED FILE SIZE= " << compressedFile.size() << endl;
   return compressedFile;
 }
-
+//=================DECODE LOGIC================
 void coder ::decode(string compressedFileName) {
   cout << "control in decode function" << endl;
   // extract the height and width from the compressedFile

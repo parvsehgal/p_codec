@@ -116,12 +116,39 @@ dct::performDCT(vector<unsigned char> &imageSubSample, unsigned int width,
   return {yMatrix, cbMatrix, crMatrix};
 }
 //==================DECODE FUNCTIONS===================================
+
+vector<vector<float>> dct::getMatrixFromBlock(block &currBlock) {
+  vector<vector<float>> res(8, vector<float>(8, 0)); // 8x8 empty matrix
+  res[0][0] = currBlock.first; // setting up the DC in the matrix;
+  // make an array from the {last ,run ,level} pairs
+  vector<float> zigzigArr;
+  zigzigArr.push_back(currBlock.first);
+  for (auto pair : currBlock.second) {
+    int run = get<1>(pair);
+    while (run--) {
+      zigzigArr.push_back(0);
+    }
+    zigzigArr.push_back(get<2>(pair)); // the level value
+    if (get<0>(pair) == 1) {           // its the last one
+      while (zigzigArr.size() < 64) {
+        zigzigArr.push_back(0);
+      }
+      break;
+    }
+  }
+  // now should have zigzig array and just need to put values in matrix
+
+  cout << endl;
+  return res;
+}
+
 void dct::IDCTon8x8(int i, int j, vector<vector<float>> &Matrix, int lumeChrome,
                     block currBlock) {
-  cout << "control here" << endl;
   // send currBlock to a function that converts the block into a zigzig list
   // then into reversed zigzig ordered matrix then perform IDCT and reverse
   // Quantization and fill the Matrix with those values and return
+
+  vector<vector<float>> preIdctMatrix = getMatrixFromBlock(currBlock);
 }
 void dct::performIDCT(int width, int height, blocks &decodedBlocks) {
   // first make empty matrices for Y , CB and CR
@@ -140,6 +167,11 @@ void dct::performIDCT(int width, int height, blocks &decodedBlocks) {
   }
   for (int i = 0; i < cbMatrix.size(); i += 8) {
     for (int j = 0; j < cbMatrix[0].size(); j++) {
+      // single 8x8 matrix from block and IDCT + reverse Quantization
+    }
+  }
+  for (int i = 0; i < crMatrix.size(); i += 8) {
+    for (int j = 0; j < crMatrix[0].size(); j++) {
       // single 8x8 matrix from block and IDCT + reverse Quantization
     }
   }
