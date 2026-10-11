@@ -8,7 +8,7 @@ vector<unsigned char> coder::encode(unsigned int height, unsigned int width,
                                     string file_path) {
   vector<unsigned char> imageSubSample =
       this->chromaObj.generateSubsample(height, width, file_path);
-  ofstream outputFile{"coded.raw"};
+  ofstream outputFile{"coded.yuv"};
   outputFile.write(reinterpret_cast<char *>(imageSubSample.data()),
                    imageSubSample.size());
 
@@ -45,4 +45,9 @@ void coder ::decode(string compressedFileName) {
   out.write(reinterpret_cast<const char *>(decodedSubSample.data()),
             decodedSubSample.size());
   out.close();
+  // hand the sample to chroma class to make an RGB24 image from it
+  auto rgbBuffer = this->chromaObj.yuvTorgb(decodedSubSample, width, height);
+  ofstream outRGB("decoded.rgb", ios::binary);
+  outRGB.write(reinterpret_cast<char *>(rgbBuffer.data()), rgbBuffer.size());
+  outRGB.close();
 }

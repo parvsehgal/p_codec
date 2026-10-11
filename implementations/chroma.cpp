@@ -119,3 +119,44 @@ vector<unsigned char> chroma::generateSubsample(unsigned int height,
   cout << "new Dimensions " << this->width << " " << this->height << endl;
   return yuv420pbuffer;
 }
+//==============DECODE LOGIC=================
+// this function is AI generated
+vector<unsigned char> chroma::yuvTorgb(const vector<unsigned char> &yuv,
+                                       int width, int height) {
+  const size_t lumaSize = static_cast<size_t>(width) * height;
+  const int cw = width / 2; // chroma plane width
+  const size_t chromaSize = static_cast<size_t>(cw) * (height / 2);
+
+  vector<unsigned char> rgb;
+  if (yuv.size() < lumaSize + 2 * chromaSize) {
+    cerr << "yuvTorgb: buffer too small" << endl;
+    return rgb;
+  }
+  rgb.resize(lumaSize * 3);
+
+  const unsigned char *Y = yuv.data();
+  const unsigned char *Cb = Y + lumaSize;
+  const unsigned char *Cr = Cb + chromaSize;
+
+  auto clamp = [](float v) -> unsigned char {
+    int p = static_cast<int>(lround(v));
+    return static_cast<unsigned char>(min(255, max(0, p)));
+  };
+
+  for (int row = 0; row < height; row++) {
+    for (int col = 0; col < width; col++) {
+      // each chroma sample covers a 2x2 block of luma pixels
+      size_t ci = static_cast<size_t>(row / 2) * cw + (col / 2);
+
+      float y = Y[static_cast<size_t>(row) * width + col];
+      float cb = Cb[ci] - 128.0f;
+      float cr = Cr[ci] - 128.0f;
+
+      size_t o = (static_cast<size_t>(row) * width + col) * 3;
+      rgb[o + 0] = clamp(y + 1.402f * cr);                     // R
+      rgb[o + 1] = clamp(y - 0.344136f * cb - 0.714136f * cr); // G
+      rgb[o + 2] = clamp(y + 1.772f * cb);                     // B
+    }
+  }
+  return rgb;
+}

@@ -17,4 +17,7 @@ public:
   vector<unsigned char> generateSubsample(unsigned int height,
                                           unsigned int width,
                                           std::string filePath);
+  //=========DECODE LOGIC=======
+  vector<unsigned char> yuvTorgb(const vector<unsigned char> &decodedSubSample,
+                                 int width, int height);
 };
