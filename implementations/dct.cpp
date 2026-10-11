@@ -116,7 +116,62 @@ dct::performDCT(vector<unsigned char> &imageSubSample, unsigned int width,
   return {yMatrix, cbMatrix, crMatrix};
 }
 //==================DECODE FUNCTIONS===================================
-
+void dct::Compute8x8Idct(vector<vector<float>> &in, vector<vector<float>> &out,
+                         int lumeChrome) {
+  int i, j, u, v;
+  float s;
+  for (i = 0; i < 8; i++)
+    for (j = 0; j < 8; j++) {
+      s = 0;
+      for (u = 0; u < 8; u++)
+        for (v = 0; v < 8; v++) {
+          int quant;
+          if (!lumeChrome) {
+            quant = this->luminanceTable[u][v];
+          } else {
+            quant = this->chrominanceTabe[u][v];
+          }
+          s += quant * in[u][v] * cos((2 * i + 1) * u * PI / 16) *
+               cos((2 * j + 1) * v * PI / 16) * ((u == 0) ? 1 / sqrt(2) : 1.) *
+               ((v == 0) ? 1 / sqrt(2) : 1.);
+        }
+      out[i][j] = (s / 4);
+    }
+}
+void dct::zigzagFill(vector<float> &arr, vector<vector<float>> &mat) {
+  int row = 0, col = 0;
+  bool up = true; // true = moving up-right, false = moving down-left
+  for (int i = 0; i < 64; ++i) {
+    mat[row][col] = arr[i];
+    if (up) {
+      if (col == 7) {
+        ++row;
+        up = false;
+      } // hit right edge
+      else if (row == 0) {
+        ++col;
+        up = false;
+      } // hit top edge
+      else {
+        --row;
+        ++col;
+      }
+    } else {
+      if (row == 7) {
+        ++col;
+        up = true;
+      } // hit bottom edge
+      else if (col == 0) {
+        ++row;
+        up = true;
+      } // hit left edge
+      else {
+        ++row;
+        --col;
+      }
+    }
+  }
+}
 vector<vector<float>> dct::getMatrixFromBlock(block &currBlock) {
   vector<vector<float>> res(8, vector<float>(8, 0)); // 8x8 empty matrix
   res[0][0] = currBlock.first; // setting up the DC in the matrix;
@@ -136,8 +191,18 @@ vector<vector<float>> dct::getMatrixFromBlock(block &currBlock) {
       break;
     }
   }
+  for (int i = 0; i < zigzigArr.size(); i++) {
+    cout << zigzigArr[i] << " ";
+  }
+  cout << endl;
   // now should have zigzig array and just need to put values in matrix
-
+  zigzagFill(zigzigArr, res);
+  // for (int i = 0; i < res.size(); i++) {
+  //   for (int j = 0; j < res[0].size(); j++) {
+  //     cout << res[i][j] << " ";
+  //   }
+  //   cout << endl;
+  // }
   cout << endl;
   return res;
 }
@@ -147,10 +212,24 @@ void dct::IDCTon8x8(int i, int j, vector<vector<float>> &Matrix, int lumeChrome,
   // send currBlock to a function that converts the block into a zigzig list
   // then into reversed zigzig ordered matrix then perform IDCT and reverse
   // Quantization and fill the Matrix with those values and return
-
   vector<vector<float>> preIdctMatrix = getMatrixFromBlock(currBlock);
+  vector<vector<float>> postIdctMatrix(preIdctMatrix);
+  Compute8x8Idct(preIdctMatrix, postIdctMatrix, lumeChrome);
+  //  for (int i = 0; i < postIdctMatrix.size(); i++) {
+  //    for (int j = 0; j < postIdctMatrix[0].size(); j++) {
+  //      cout << postIdctMatrix[i][j] << " ";
+  //    }
+  //    cout << endl;
+  //  }
+  // fill the matrix with values
+  for (int a = 0; a < 8; a++) {
+    for (int b = 0; b < 8; b++) {
+      Matrix[a + i][b + j] = postIdctMatrix[a][b];
+    }
+  }
 }
-void dct::performIDCT(int width, int height, blocks &decodedBlocks) {
+vector<unsigned char> dct::performIDCT(int width, int height,
+                                       blocks &decodedBlocks) {
   // first make empty matrices for Y , CB and CR
   vector<vector<float>> yMatrix(height, vector<float>(width));
   vector<vector<float>> cbMatrix(height / 2, vector<float>(width / 2));
@@ -159,20 +238,44 @@ void dct::performIDCT(int width, int height, blocks &decodedBlocks) {
   cout << "control here" << endl;
   int blockCounter = 0;
   for (int i = 0; i < yMatrix.size(); i += 8) {
-    for (int j = 0; j < yMatrix[0].size(); j++) {
+    for (int j = 0; j < yMatrix[0].size(); j += 8) {
       // single 8x8 matrix from block and IDCT + reverse Quantization
       // need i,j,matrix,lume/chrome flag,block[blockCount] ,
       IDCTon8x8(i, j, yMatrix, 0, decodedBlocks[blockCounter++]);
     }
   }
   for (int i = 0; i < cbMatrix.size(); i += 8) {
-    for (int j = 0; j < cbMatrix[0].size(); j++) {
+    for (int j = 0; j < cbMatrix[0].size(); j += 8) {
       // single 8x8 matrix from block and IDCT + reverse Quantization
+      IDCTon8x8(i, j, cbMatrix, 1, decodedBlocks[blockCounter++]);
     }
   }
   for (int i = 0; i < crMatrix.size(); i += 8) {
-    for (int j = 0; j < crMatrix[0].size(); j++) {
+    for (int j = 0; j < crMatrix[0].size(); j += 8) {
       // single 8x8 matrix from block and IDCT + reverse Quantization
+      IDCTon8x8(i, j, crMatrix, 1, decodedBlocks[blockCounter++]);
     }
   }
+  // Now combine the 3 matrices into a single level shiftef buffer
+  vector<unsigned char> decodedSubSample;
+  for (int i = 0; i < yMatrix.size(); i++) {
+    for (int j = 0; j < yMatrix[0].size(); j++) {
+      decodedSubSample.push_back(
+          static_cast<unsigned char>(yMatrix[i][j] + 128));
+    }
+  }
+  for (int i = 0; i < cbMatrix.size(); i++) {
+    for (int j = 0; j < cbMatrix[0].size(); j++) {
+      decodedSubSample.push_back(
+          static_cast<unsigned char>(cbMatrix[i][j] + 128));
+    }
+  }
+  for (int i = 0; i < crMatrix.size(); i++) {
+    for (int j = 0; j < crMatrix[0].size(); j++) {
+      decodedSubSample.push_back(
+          static_cast<unsigned char>(crMatrix[i][j] + 128));
+    }
+  }
+  // should now have decoded yuv420 sumSample for the original image
+  return decodedSubSample;
 }

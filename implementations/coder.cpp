@@ -8,7 +8,7 @@ vector<unsigned char> coder::encode(unsigned int height, unsigned int width,
                                     string file_path) {
   vector<unsigned char> imageSubSample =
       this->chromaObj.generateSubsample(height, width, file_path);
-  ofstream outputFile{"codec.raw"};
+  ofstream outputFile{"coded.raw"};
   outputFile.write(reinterpret_cast<char *>(imageSubSample.data()),
                    imageSubSample.size());
 
@@ -39,5 +39,10 @@ void coder ::decode(string compressedFileName) {
   // runlevel pairs from bytes
   auto decodedBlocks =
       this->entropyObj.reverseEntropy(width, height, compressedFileName);
-  this->dctObj.performIDCT(width, height, decodedBlocks);
+  vector<unsigned char> decodedSubSample =
+      this->dctObj.performIDCT(width, height, decodedBlocks);
+  ofstream out("decoded.yuv", ios::binary);
+  out.write(reinterpret_cast<const char *>(decodedSubSample.data()),
+            decodedSubSample.size());
+  out.close();
 }
