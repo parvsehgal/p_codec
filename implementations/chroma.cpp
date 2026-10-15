@@ -6,14 +6,11 @@ using namespace std;
 
 vector<unsigned char> chroma ::readFile(unsigned int height, unsigned int width,
                                         string filePath) {
-  // read the RGB values of the file
   size_t fileSize = height * width * 3;
   ifstream inputFile{filePath};
   vector<unsigned char> rgbBuffer(fileSize);
   inputFile.read(reinterpret_cast<char *>(rgbBuffer.data()), fileSize);
-  cout << "raw image size ->" << inputFile.tellg() << endl;
 
-  // now make padded rgbMatrix;
   unsigned int heightAdj = (16 - height % 16) % 16;
   unsigned int widthAdj = (16 - width % 16) % 16;
   vector<vector<unsigned char>> rgbMaxtix(
@@ -25,7 +22,6 @@ vector<unsigned char> chroma ::readFile(unsigned int height, unsigned int width,
     }
   }
 
-  // now fill the unfilled cells of the matrix to pad it
   if (heightAdj) {
     for (unsigned int i = height; i < (height + heightAdj); i++) {
       for (unsigned int j = 0; j < 3 * (width); j++) {
@@ -41,7 +37,6 @@ vector<unsigned char> chroma ::readFile(unsigned int height, unsigned int width,
     }
   }
 
-  // now convert padded rgbMatrix to 1D vector and rerturn it
   vector<unsigned char> paddedRGBbuffer;
   paddedRGBbuffer.reserve((height + heightAdj) * (width + widthAdj) * 3);
   for (int i = 0; i < (height + heightAdj); i++) {
@@ -54,8 +49,6 @@ vector<unsigned char> chroma ::readFile(unsigned int height, unsigned int width,
 vector<unsigned char> chroma::rgbToyuv(vector<unsigned char> &rgbBuffer,
                                        unsigned int height,
                                        unsigned int width) {
-  // okay so have 3 sep vectors to store Y CR and CBs for each pixel and then
-  // just concatinate them
   vector<unsigned char> yBuffer;
   vector<unsigned char> cbBuffer;
   vector<unsigned char> crBuffer;
@@ -72,8 +65,6 @@ vector<unsigned char> chroma::rgbToyuv(vector<unsigned char> &rgbBuffer,
     crBuffer.push_back(currCr);
   }
 
-  // subsample here take avg of every 4 samples (no index out of bounds due to
-  // padding);
   vector<unsigned char> reducedCb;
   vector<unsigned char> reducedCr;
   for (int i = 0; i < height; i += 2) {
@@ -94,7 +85,6 @@ vector<unsigned char> chroma::rgbToyuv(vector<unsigned char> &rgbBuffer,
     }
   }
 
-  // make the final 420p buffer and return it
   vector<unsigned char> yuv420pbuffer;
   yuv420pbuffer.reserve(yBuffer.size() + reducedCb.size() + reducedCr.size());
   yuv420pbuffer.insert(yuv420pbuffer.end(), yBuffer.begin(), yBuffer.end());
@@ -116,7 +106,6 @@ vector<unsigned char> chroma::generateSubsample(unsigned int height,
   this->width += widthAdj;
   vector<unsigned char> yuv420pbuffer =
       rgbToyuv(rgbBuffer, this->height, this->width);
-  cout << "new Dimensions " << this->width << " " << this->height << endl;
   return yuv420pbuffer;
 }
 //==============DECODE LOGIC=================

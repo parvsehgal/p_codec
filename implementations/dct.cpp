@@ -16,8 +16,6 @@ void dct::dctOn8x8(unsigned int i, unsigned int j,
       input[a][b] = static_cast<int>(matrix[i + a][j + b]);
     }
   }
-  // now should be able to perform DCT and put the values directly in the source
-  // matrix
   for (int u = 0; u < 8; u++) {
     for (int v = 0; v < 8; v++) {
       double sum = 0.0;
@@ -44,22 +42,6 @@ void dct::dctOn8x8(unsigned int i, unsigned int j,
       }
     }
   }
-  if (i == 0 && j == 0) {
-    cout << "Before DCT/Quant" << endl;
-    for (int row = 0; row < 8; row++) {
-      for (int col = 0; col < 8; col++) {
-        cout << input[row][col] << " ";
-      }
-      cout << endl;
-    }
-    cout << "after DCT/Quant" << endl;
-    for (int row = 0; row < 8; row++) {
-      for (int col = 0; col < 8; col++) {
-        cout << matrix[row + i][col + j] << " ";
-      }
-      cout << endl;
-    }
-  }
 }
 tuple<vector<vector<float>>, vector<vector<float>>, vector<vector<float>>>
 dct::performDCT(vector<unsigned char> &imageSubSample, unsigned int width,
@@ -77,12 +59,6 @@ dct::performDCT(vector<unsigned char> &imageSubSample, unsigned int width,
                                         chromaSize};
   vector<unsigned char> crBuffer = {
       imageSubSample.begin() + lumaSize + chromaSize, imageSubSample.end()};
-  cout << "ybuffer size -> " << yBuffer.size() << endl;
-  cout << "cbBuffer size -> " << cbBuffer.size() << endl;
-  cout << "crBuffer size -> " << crBuffer.size() << endl;
-
-  // now I have 3 sperate buffer which should be correctly split
-  // performDCT on 8x8 samples of these buffers after making them into matrices
 
   vector<vector<float>> yMatrix(height, vector<float>(width));
   for (int i = 0; i < height; i++) {
@@ -99,8 +75,6 @@ dct::performDCT(vector<unsigned char> &imageSubSample, unsigned int width,
     }
   }
 
-  // all matrices made now perform DCT on 8x8 blocks
-
   for (int i = 0; i < yMatrix.size(); i += 8) {
     for (int j = 0; j < yMatrix[0].size(); j += 8) {
       dctOn8x8(i, j, yMatrix, "lume");
@@ -112,7 +86,6 @@ dct::performDCT(vector<unsigned char> &imageSubSample, unsigned int width,
       dctOn8x8(i, j, crMatrix, "chrome");
     }
   }
-  // now all matrices should have DCT applied on them now return to main
   return {yMatrix, cbMatrix, crMatrix};
 }
 //==================DECODE FUNCTIONS===================================
@@ -174,8 +147,7 @@ void dct::zigzagFill(vector<float> &arr, vector<vector<float>> &mat) {
 }
 vector<vector<float>> dct::getMatrixFromBlock(block &currBlock) {
   vector<vector<float>> res(8, vector<float>(8, 0)); // 8x8 empty matrix
-  res[0][0] = currBlock.first; // setting up the DC in the matrix;
-  // make an array from the {last ,run ,level} pairs
+  res[0][0] = currBlock.first;
   vector<float> zigzigArr;
   zigzigArr.push_back(currBlock.first);
   for (auto pair : currBlock.second) {
@@ -183,64 +155,45 @@ vector<vector<float>> dct::getMatrixFromBlock(block &currBlock) {
     while (run--) {
       zigzigArr.push_back(0);
     }
-    zigzigArr.push_back(get<2>(pair)); // the level value
-    if (get<0>(pair) == 1) {           // its the last one
+    zigzigArr.push_back(get<2>(pair));
+    if (get<0>(pair) == 1) {
       while (zigzigArr.size() < 64) {
         zigzigArr.push_back(0);
       }
       break;
     }
   }
-  for (int i = 0; i < zigzigArr.size(); i++) {
-    cout << zigzigArr[i] << " ";
-  }
-  cout << endl;
-  // now should have zigzig array and just need to put values in matrix
   zigzagFill(zigzigArr, res);
-  // for (int i = 0; i < res.size(); i++) {
-  //   for (int j = 0; j < res[0].size(); j++) {
-  //     cout << res[i][j] << " ";
-  //   }
-  //   cout << endl;
-  // }
-  cout << endl;
   return res;
 }
 
 void dct::IDCTon8x8(int i, int j, vector<vector<float>> &Matrix, int lumeChrome,
                     block currBlock) {
-  // send currBlock to a function that converts the block into a zigzig list
-  // then into reversed zigzig ordered matrix then perform IDCT and reverse
-  // Quantization and fill the Matrix with those values and return
   vector<vector<float>> preIdctMatrix = getMatrixFromBlock(currBlock);
   vector<vector<float>> postIdctMatrix(preIdctMatrix);
   Compute8x8Idct(preIdctMatrix, postIdctMatrix, lumeChrome);
-  //  for (int i = 0; i < postIdctMatrix.size(); i++) {
-  //    for (int j = 0; j < postIdctMatrix[0].size(); j++) {
-  //      cout << postIdctMatrix[i][j] << " ";
-  //    }
-  //    cout << endl;
-  //  }
-  // fill the matrix with values
   for (int a = 0; a < 8; a++) {
     for (int b = 0; b < 8; b++) {
       Matrix[a + i][b + j] = postIdctMatrix[a][b];
     }
   }
 }
+float dct::clampPixel(float shiftedPixel) {
+  if (shiftedPixel < 0.0)
+    shiftedPixel = 0.0f;
+  if (shiftedPixel > 255.0)
+    shiftedPixel = 255.0f;
+  return round(shiftedPixel);
+}
 vector<unsigned char> dct::performIDCT(int width, int height,
                                        blocks &decodedBlocks) {
-  // first make empty matrices for Y , CB and CR
   vector<vector<float>> yMatrix(height, vector<float>(width));
   vector<vector<float>> cbMatrix(height / 2, vector<float>(width / 2));
   vector<vector<float>> crMatrix(height / 2, vector<float>(width / 2));
 
-  cout << "control here" << endl;
   int blockCounter = 0;
   for (int i = 0; i < yMatrix.size(); i += 8) {
     for (int j = 0; j < yMatrix[0].size(); j += 8) {
-      // single 8x8 matrix from block and IDCT + reverse Quantization
-      // need i,j,matrix,lume/chrome flag,block[blockCount] ,
       IDCTon8x8(i, j, yMatrix, 0, decodedBlocks[blockCounter++]);
     }
   }
@@ -256,26 +209,24 @@ vector<unsigned char> dct::performIDCT(int width, int height,
       IDCTon8x8(i, j, crMatrix, 1, decodedBlocks[blockCounter++]);
     }
   }
-  // Now combine the 3 matrices into a single level shiftef buffer
   vector<unsigned char> decodedSubSample;
   for (int i = 0; i < yMatrix.size(); i++) {
     for (int j = 0; j < yMatrix[0].size(); j++) {
       decodedSubSample.push_back(
-          static_cast<unsigned char>(yMatrix[i][j] + 128));
+          static_cast<unsigned char>(clampPixel(yMatrix[i][j] + 128)));
     }
   }
   for (int i = 0; i < cbMatrix.size(); i++) {
     for (int j = 0; j < cbMatrix[0].size(); j++) {
       decodedSubSample.push_back(
-          static_cast<unsigned char>(cbMatrix[i][j] + 128));
+          static_cast<unsigned char>(clampPixel(cbMatrix[i][j] + 128)));
     }
   }
   for (int i = 0; i < crMatrix.size(); i++) {
     for (int j = 0; j < crMatrix[0].size(); j++) {
       decodedSubSample.push_back(
-          static_cast<unsigned char>(crMatrix[i][j] + 128));
+          static_cast<unsigned char>(clampPixel(crMatrix[i][j] + 128)));
     }
   }
-  // should now have decoded yuv420 sumSample for the original image
   return decodedSubSample;
 }

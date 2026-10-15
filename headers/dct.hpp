@@ -38,4 +38,5 @@ public:
                  block currBlock);
   void Compute8x8Idct(vector<vector<float>> &in, vector<vector<float>> &out,
                       int lumeChrome);
+  float clampPixel(float shiftedPixel);
 };

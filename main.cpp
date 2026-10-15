@@ -28,7 +28,6 @@ int main() {
     resultantFile.write(reinterpret_cast<char *>(compresedFile.data()),
                         compresedFile.size());
   } else {
-    // start the decode pipeline would be the inverse of the decode process
     cout << "enter the compressed file to be decoded" << endl;
     string compressedFileName;
     cin >> compressedFileName;

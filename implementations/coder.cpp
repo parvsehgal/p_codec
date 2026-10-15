@@ -27,7 +27,6 @@ vector<unsigned char> coder::encode(unsigned int height, unsigned int width,
 }
 //=================DECODE LOGIC================
 void coder ::decode(string compressedFileName) {
-  cout << "control in decode function" << endl;
   // extract the height and width from the compressedFile
   ifstream compressedFile{compressedFileName};
   vector<unsigned char> dims(4);
@@ -35,8 +34,6 @@ void coder ::decode(string compressedFileName) {
   int width = static_cast<int>((dims[0] << 8) | (dims[1]));
   int height = static_cast<int>((dims[2] << 8) | (dims[3]));
 
-  // after we have the dimensions start to do reverse entropy and create
-  // runlevel pairs from bytes
   auto decodedBlocks =
       this->entropyObj.reverseEntropy(width, height, compressedFileName);
   vector<unsigned char> decodedSubSample =
@@ -45,7 +42,7 @@ void coder ::decode(string compressedFileName) {
   out.write(reinterpret_cast<const char *>(decodedSubSample.data()),
             decodedSubSample.size());
   out.close();
-  // hand the sample to chroma class to make an RGB24 image from it
+
   auto rgbBuffer = this->chromaObj.yuvTorgb(decodedSubSample, width, height);
   ofstream outRGB("decoded.rgb", ios::binary);
   outRGB.write(reinterpret_cast<char *>(rgbBuffer.data()), rgbBuffer.size());
