@@ -21,7 +21,6 @@ void metrics::calculateCompressionRatio(std::string originalFile,
   std::cout << "the compression ratio is " << compressionRatio << "x"
             << std::endl;
 }
-
 void metrics::calculatePSNR(const std::string originalFile,
                             const std::string decodedFile,
                             const std::string encodedFile) {
@@ -33,7 +32,6 @@ void metrics::calculatePSNR(const std::string originalFile,
     return;
   }
 
-  // read both files fully into memory as bytes
   std::vector<unsigned char> original{
       std::istreambuf_iterator<char>(originalReader),
       std::istreambuf_iterator<char>()};
@@ -41,13 +39,24 @@ void metrics::calculatePSNR(const std::string originalFile,
       std::istreambuf_iterator<char>(decodedReader),
       std::istreambuf_iterator<char>()};
 
-  if (original.empty() || original.size() != decoded.size()) {
-    std::cerr << "Files are empty or have different sizes (" << original.size()
-              << " vs " << decoded.size() << ")\n";
+  if (original.empty()) {
+    std::cerr << "Original file is empty\n";
     return;
   }
 
-  // mean squared error
+  // decoded may be longer (padding), but it must not be shorter
+  if (decoded.size() < original.size()) {
+    std::cerr << "Decoded file is smaller than the original (" << decoded.size()
+              << " vs " << original.size() << ")\n";
+    return;
+  }
+
+  if (decoded.size() > original.size()) {
+    std::cout << "Note: ignoring " << decoded.size() - original.size()
+              << " extra bytes at the end of the decoded file\n";
+  }
+
+  // mean squared error over the original's length only
   double sumSquaredError = 0.0;
   for (size_t i = 0; i < original.size(); ++i) {
     double diff = static_cast<double>(original[i]) - decoded[i];
