@@ -1,6 +1,5 @@
 #include "../headers/dct.hpp"
 #include <cmath>
-#include <iostream>
 #include <tuple>
 #include <vector>
 #define PI 3.1415926535897
