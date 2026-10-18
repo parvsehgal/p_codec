@@ -12,6 +12,7 @@ set(SOURCES
     implementations/bitWriter.cpp
     implementations/coder.cpp
     implementations/bitReader.cpp
+    implementations/metrics.cpp
 )
 
 # Create executable
