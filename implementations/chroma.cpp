@@ -3,7 +3,8 @@
 #include <iostream>
 #include <vector>
 using namespace std;
-
+// This is the chroma class that primarily handes the subsabmpling of RGB 24 raw
+// data and vice versa in case of decode
 vector<unsigned char> chroma ::readFile(unsigned int height, unsigned int width,
                                         string filePath) {
   size_t fileSize = height * width * 3;

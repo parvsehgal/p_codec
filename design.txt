@@ -1,71 +1,8 @@
-initial first steps{
-  get a raw image as input
-  get its Height and Width
-  and read all of its RGB pixel values in a char buffer
-}
+The Application is divided in 3 main classes
 
-next couple of step{
-  do chroma subsampling of the image (convert it to Y:Cr:Cb either 4:2:2 or 4:2:0)
-}
+  1. the chroma class -> it handles the conversion of raw rgb24 files into yuv420 subsample and vice versa
+  2. the dct class it is used to perform the discrete cosine transformation and quantization on 8x8 sections of the image
+  3. the entropy class that is used to Huffman encode the transformed and quantized coefficients 
 
-
-do need this application to be a CLI
-
-
------------------------------------------------------------------------------------------------------------------------------
-
-broken down steps
-  initial read and conversion to YCRCB -> class name chroma
-
-  DCT ,quantization -> dct 
-
-  zigzag and entropy coding -> class name to be decided could be entropy idk ?
-
-
----CHROMA class
-
-  goal is to get height , width , and path to raw image then return a yuv420p buffer on which DCT can be applied cleanly this buffer will be passed to another DCT class
-
-
----DCT class
-
-take the sumSample buffer as input split into 8x8 blocks and perform DCT and quantization
-
-
---Entropy class
-
-take in quantized coefficients arrage in zig-zag pattern and apply run level coding /huffman coding{
-  send the run level pairs of each 8x8 section and pass them to a function that uses the bitwriter class to append the bits to its own stream
-  after every 8x8 block has been added to the bitstream then the flush function should be executed and the its bitstream should be moved to a returnable variable this should give use the final compressed file
-
-  should be able to start wroking on a decoder
-}
-
----decode loop
-a bit reader class
-inverse Entropy class
-inverse DCT 
-inverse chroma subsampling
-
-
-
---------------------------------------------------------entropy
-if get time setup inverse DCT to check if it can be converted back to yuv420 that works  
-
---------------------------------- 
-remaining todos
-  add the decode loop
-  add a header to the compressed file 
-  
-  add an attractive Read me 
-  and psnr metrics
-
-  make a binary downloadable via curl
-
------temp ---
-in decode loop start reading the bits one by one as soon as we have a complete 8x8 run level pairs pushh them to an arrays of 
-those pairs ? so vector<vector<tuple<int,int,int>>> combinedMatrices then have a big empty float matrix and then fill it one by one with reversing zigzaging the each complete set of pairs 
-
-then do inverse DCT on them convert to a one giant unsigned char array and then convert to a file 
-
-
+the above classes also have corresponding decode functions in them
+the classes are combined for orchestration in the coder class

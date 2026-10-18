@@ -6,6 +6,9 @@
 
 using namespace std;
 
+// this class is priarily used to apply discrete cosine transformation on 8x8
+// blocks of image data and Quantization accoding to luma and chroma
+// Quantization tables
 void dct::dctOn8x8(unsigned int i, unsigned int j,
                    vector<vector<float>> &matrix, string component) {
   float Cu, Cv;

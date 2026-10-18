@@ -3,7 +3,8 @@
 #include <fstream>
 #include <iostream>
 using namespace std;
-
+// This is the orchestration class that handles the flow of data from one class
+// to another along the encode and decode process
 vector<unsigned char> coder::encode(unsigned int height, unsigned int width,
                                     string file_path) {
   vector<unsigned char> imageSubSample =

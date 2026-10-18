@@ -8,7 +8,8 @@
 #include <unordered_map>
 #include <vector>
 using namespace std;
-
+// This class is used to perform entropy coding and huffman encoding on
+// quantized coefficients
 void entropy::huffmanEncode(int dc,
                             vector<tuple<int, int, int>> &currRunLevel) {
   char DC = dc;
